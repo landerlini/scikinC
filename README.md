@@ -28,7 +28,7 @@ void somewhere_in_your_code (void)
   if (!handle)
     std::cout << "dlerror: " << dlerror() << std::endl; 
 
-  mlfunc minmax = mlfunc(dlsym (handle, "a_minmaxscaler")); 
+  mlfunc minmax = mlfunc(dlsym (handle, "some_model")); 
   float *inp [] = { /* your input goes here */ };
   float *out [ /*output n_features goes here*/ ];
   minmax ( out, inp ); 
@@ -36,6 +36,9 @@ void somewhere_in_your_code (void)
   dlclose(handle); 
 }
 ```
+**Note**: the symbol to load through dlsym is the name of the pickle file, 
+stripped of its extension, if any. In this case `some_model.pkl` gets compiled 
+in the symbol `some_model`. 
 
 ## Implemented converters
 
