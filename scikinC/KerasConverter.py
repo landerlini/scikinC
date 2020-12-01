@@ -1,4 +1,5 @@
 from scikinC import BaseConverter 
+from ._tools import array2c 
 
 class KerasConverter (BaseConverter):
   def __init__ (self):
@@ -45,8 +46,8 @@ class KerasConverter (BaseConverter):
       kernel, bias = layer.get_weights()
        
       lines.append ("  // Bias shape: " + str(bias.shape))
-      kernel_values = "{%s}"%(',\n   '.join(["{%s}"%(','.join(["%18.13f"%x for x in row])) for row in kernel]))
-      bias_values   = "{%s}"% ( ",".join(["%18.13f"%x for x in bias]))
+      kernel_values = array2c(kernel) #"{%s}"%(',\n   '.join(["{%s}"%(','.join(["%18.13f"%x for x in row])) for row in kernel]))
+      bias_values   = array2c(bias)   #"{%s}"% ( ",".join(["%18.13f"%x for x in bias]))
       lines.append ("  const float kernel_%d[%d][%d] = \n  %s;" % (iLayer, kernel.shape[0], kernel.shape[1],kernel_values))
       lines.append ("  const float bias_%d[%d] = %s;" % (iLayer, bias.shape[0], bias_values))
       

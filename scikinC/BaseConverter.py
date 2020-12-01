@@ -11,9 +11,9 @@ class BaseConverter:
     "/*                                                                         */\n"
     "/*                       D O   N O T   E D I T   ! ! !                     */\n"
     "/*                                                                         */\n"
-    "/*  File generated on %(date)-16s                                     */\n"
-    "/*  by %(user)-16s                                                    */\n"
-    "/*  using %(conv)-16s as converter                                    */\n"
+    "/*  File generated on %(date)-26s                           */\n"
+    "/*  by %(user)-26s                                          */\n"
+    "/*  using %(conv)-36s as converter                */\n"
     "/*                                                                         */\n"
     "/***************************************************************************/\n" % 
     dict (

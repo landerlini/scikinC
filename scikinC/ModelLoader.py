@@ -5,7 +5,7 @@ import pickle
 
 def _basename (filename):
   if "." not in filename: 
-    return filename
+    return os.path.basename(filename) 
   return re.findall ( "([A-Za-z0-9_\-]*)\.[A-Za-z0-9_\-\.]",
       os.path.basename(filename)) [0] 
 
@@ -17,8 +17,7 @@ def load_from_string ( string ):
         ## it is a pickled object 
         return ({_basename(string): pickle.load (f)},)
     except Exception as e:
-      if ".pkl" in string:
-        print (e) 
+      raise e
 
   ## Add here loaders for additional persistency formats 
 

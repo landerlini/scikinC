@@ -1,4 +1,5 @@
 from scikinC import BaseConverter 
+from ._tools import array2c 
 
 class MinMaxScalerConverter (BaseConverter):
   def __init__ (self):
@@ -16,8 +17,8 @@ class MinMaxScalerConverter (BaseConverter):
     float* %(name)s (float* ret, const float *input)
     {
       int c; 
-      float input_min[] = {%(inputMin)s}; 
-      float input_max[] = {%(inputMax)s}; 
+      float input_min[] = %(inputMin)s; 
+      float input_max[] = %(inputMax)s; 
       float output_min = %(outputMin)f; 
       float output_max = %(outputMax)f; 
 
@@ -30,8 +31,8 @@ class MinMaxScalerConverter (BaseConverter):
       """ % dict (
         name = name, 
         nFeatures = nFeatures,
-        inputMin = ", ".join ([str(x) for x in model.data_min_]),  
-        inputMax = ", ".join ([str(x) for x in model.data_max_]),  
+        inputMin = array2c(model.data_min_), 
+        inputMax = array2c(model.data_max_),
         outputMin = model.feature_range[0], 
         outputMax = model.feature_range[1], 
         )
@@ -46,8 +47,8 @@ class MinMaxScalerConverter (BaseConverter):
       int c; 
       float input_min = %(inputMin)f; 
       float input_max = %(inputMax)f; 
-      float output_min[] = {%(outputMin)s}; 
-      float output_max[] = {%(outputMax)s}; 
+      float output_min[] = %(outputMin)s; 
+      float output_max[] = %(outputMax)s; 
 
       for (int c = 0; c < %(nFeatures)d; ++c)
         ret [c] = (input[c] - input_min) / (input_max - input_min) 
@@ -60,8 +61,8 @@ class MinMaxScalerConverter (BaseConverter):
         nFeatures = nFeatures,
         inputMin = model.feature_range[0], 
         inputMax = model.feature_range[1], 
-        outputMin = ", ".join ([str(x) for x in model.data_min_]),  
-        outputMax = ", ".join ([str(x) for x in model.data_max_]),  
+        outputMin = array2c(model.data_min_),
+        outputMax = array2c(model.data_max_),
         )
       )
 

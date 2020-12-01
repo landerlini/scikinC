@@ -45,6 +45,8 @@ in the symbol `some_model`.
 scikit-learn:
  * GradientBoostingClassifier (binary classification and multiclass)
  * MinMaxScaler 
+ * QuantileTransformer
+ * Pipeline (except for pipelines including other pipelines)
 
 keras:
  * Sequential model
@@ -52,4 +54,7 @@ keras:
  * tanh activation function
  * relu activation function 
  * sigmoid activation function 
+
+other:
+ * DecorrTransform from TrackPar (LHCb internal) 
 

@@ -10,6 +10,9 @@ __CONVERTERS = {
       ## Scikit-learn 
       'GradientBoostingClassifier': 'GBDTC_Converter', 
       'MinMaxScaler': 'MinMaxScalerConverter', 
+      'QuantileTransformer': 'QuantileTransformerConverter', 
+      'DecorrTransformer': 'DecorrTransformerConverter', 
+      'Pipeline': 'PipelineConverter', 
 
       ## Keras 
       'Sequential': 'KerasConverter', 
