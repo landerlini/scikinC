@@ -1,7 +1,7 @@
 # scikinC
 Set of tools to translate scikit learn and keras neural network in plain C. 
 
-[![Write in C parody](https://img.youtube.com/vi/1S1fISh-pag/0.jpg)](https://www.youtube.com/watch?v=1S1fISh)
+[![Write in C parody](https://img.youtube.com/vi/1S1fISh-pag/0.jpg)](https://www.youtube.com/watch?v=1S1fISh-pag)
 
 
 ## CLI
