@@ -34,3 +34,16 @@ void somewhere_in_your_code (void)
 }
 ```
 
+## Implemented converters
+
+scikit-learn:
+ * GradientBoostingClassifier (binary classification and multiclass)
+ * MinMaxScaler 
+
+keras:
+ * Sequential model
+ * Dense layer 
+ * tanh activation function
+ * relu activation function 
+ * sigmoid activation function 
+
