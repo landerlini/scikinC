@@ -8,7 +8,7 @@ Set of tools to translate scikit learn and keras neural network in plain C.
 
 Create the C file with the exported model
 ```
-python3 -m scikinC some_model.pkl > Cfile.C
+scikinC some_model.pkl > Cfile.C
 ```
 
 Compile the C file for dynamic loading 

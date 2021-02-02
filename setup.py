@@ -46,11 +46,11 @@ setup(
 
     keywords='deployment, header-only, plain-C',  # Optional
 
-    package_dir={'': 'scikinC'},  # Optional
+    #package_dir={'': 'scikinC'},  # Optional
 
-    packages=find_packages(where='scikinC'),  # Required
+    packages=find_packages(),  # Required
 
-    python_requires='>=3.6, <3.9',
+    python_requires='>=3.6, <4',
 
     install_requires=['numpy', 'scipy', 'scikit-learn'],  # Optional
 
