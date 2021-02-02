@@ -29,7 +29,7 @@ class GBDTC_Converter (BaseConverter):
     lines += [
         "#include <math.h>",
         "extern \"C\"",
-        "double *%s (float *ret, const float *in)" % (name or "bdt", retvar, invar), 
+        "double *%s (%s, const %s)" % (name or "bdt", retvar, invar), 
         "{", 
         "  for (short i=0; i < %d; ++i) ret[i] = 0.f;" % n_classes, 
         "  double %s;" % (", ".join("y%02d" % d for d in range(n_classes)) )

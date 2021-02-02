@@ -60,7 +60,7 @@ setup(
 
     entry_points={  # Optional
         'console_scripts': [
-            'scikinC=scikinC:__main__:main',
+            'scikinC=scikinC.__main__:main',
         ],
     },
 )
