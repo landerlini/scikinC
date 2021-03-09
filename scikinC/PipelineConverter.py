@@ -12,8 +12,12 @@ class PipelineConverter (BaseConverter):
 
   def convert(self, model, name=None):
     lines = [] 
+
+    def prefixed (stepname):
+      return stepname if name is None else "%s_%s" % (name, stepname)
+
     for sname, step in model.steps: 
-      lines.append ( convert ({sname:step}) ) 
+      lines.append ( convert ({prefixed(sname):step}) ) 
     
 
 
@@ -31,17 +35,17 @@ class PipelineConverter (BaseConverter):
       float out_%(name)s[%(nFeatures)d];
       %(name)s ( out_%(name)s, %(input_name)s  );
       """ % dict (
-        name = sname,
+        name = prefixed(sname),
         nFeatures = get_n_features ( step ), 
         input_name = input_name ,
         ))
-      input_name = "out_%s" % sname 
+      input_name = "out_%s" % prefixed(sname) 
 
     sname, step = model.steps[-1] 
     lines.append ( """
       %(name)s ( ret, %(input_name)s  );
     """ % dict (
-      name = sname,
+      name = prefixed(sname),
       input_name = input_name ,
       ))
       
@@ -64,17 +68,17 @@ class PipelineConverter (BaseConverter):
       float out_%(name)s[%(nFeatures)d];
       %(name)s_inverse ( out_%(name)s, %(input_name)s  );
       """ % dict (
-        name = sname,
+        name = prefixed(sname),
         nFeatures = get_n_features ( step ), 
         input_name = input_name ,
         ))
-      input_name = "out_%s" % sname 
+      input_name = "out_%s" % prefixed(sname) 
 
     sname, step = model.steps[0] 
     lines.append ( """
       %(name)s_inverse ( ret, %(input_name)s  );
     """ % dict (
-      name = sname,
+      name = prefixed(sname),
       input_name = input_name ,
       ))
       

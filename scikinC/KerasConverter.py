@@ -8,6 +8,9 @@ class KerasConverter (BaseConverter):
 
 
   def convert (self, model, name = None): 
+    if name is None:
+      name = "keras_model"
+
     lines = self.header() 
     lines += ["""
     #include <math.h>
@@ -35,7 +38,7 @@ class KerasConverter (BaseConverter):
     extern "C" 
     float* %s (float* ret, const float *input)
     {
-    """)
+    """ % (name))
 
     nX = model.layers[0].kernel.shape[0] 
     nY = model.layers[-1].kernel.shape[-1] 

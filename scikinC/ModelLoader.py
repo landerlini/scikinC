@@ -2,6 +2,8 @@ import os
 import re 
 from glob import glob 
 import pickle 
+import sys
+
 
 def _basename (filename):
   if "." not in filename: 
@@ -11,11 +13,21 @@ def _basename (filename):
 
 def load_from_string ( string ):
   what = None
+  name = None
+  print ("Processing string: %s " % string, file=sys.stderr)
+  if "=" in string: 
+    name, string = string.split("=")
+    print ("Name: %s " % string, file=sys.stderr)
+    print ("Object: %s " % string, file=sys.stderr)
+
+  for char in "-/:?#.<>^()[]{}\|!\"$%&@#,":
+    name = name.replace (char, "_")
+
   if os.path.isfile (string):
     try:
       with open ( string, 'rb' ) as f:
         ## it is a pickled object 
-        return ({_basename(string): pickle.load (f)},)
+        return ({name or _basename(string): pickle.load (f)},)
     except Exception as e:
       raise e
 
@@ -25,13 +37,13 @@ def load_from_string ( string ):
     if os.path.isfile (os.path.join(string, 'saved_model.pb')):
       ## it is a tensorflow model 
       from tensorflow.keras.models import load_model 
-      return ({_basename(string): load_model (string, compile=False)},) 
+      return ({name or _basename(string): load_model (string, compile=False)},) 
 
     ret = [] 
     for fname in glob (os.path.join ( string, "*.pkl" )):
       try: 
         with open ( fname, 'rb' ) as f:
-          return ({_basename(fname): pickle.load (f)},)
+          return ({name or _basename(fname): pickle.load (f)},)
       except Exception as e:
         print ("Trying to load %s. Failed for %s" % 
             (fname, str(e)))
@@ -43,7 +55,7 @@ def load_from_string ( string ):
     for fname in glob (string):
       try: 
         with open ( fname, 'rb' ) as f:
-          return ({_basename(fname): pickle.load (f)},)
+          return ({name or _basename(fname): pickle.load (f)},)
       except Exception as e:
         print ("Trying to load %s. Failed for %s" % 
             (fname, str(e)))

@@ -46,19 +46,25 @@ class GBDTC_Converter (BaseConverter):
            "  ret[%d] += %f * y%02d; " % ( iClass, bdt.learning_rate, iClass) 
          ]
 
-    lines += [
-        "  short argmax = 0; ", 
-        "  for (int i = 0; i < %d; ++i) if (ret[i] > ret[argmax]) argmax = i; " % n_classes, 
-        "  if (ret[argmax] > 1e10) { " ,
-        "    for (int i = 0; i < %d; ++i) ret[i] = (i==argmax ? 1.: 0.); " % n_classes, 
-        "    return ret; ",
-        "  }", 
-        "  for (short i=0; i < %d; ++i) ret[i] = exp(ret[i]);" % n_classes, 
-        "  for (short i=0; i < %d; ++i) ret[i] = (ret[i] > 1e300?1e300:ret[i]);" % n_classes, 
-        "  long double sum = 0;", 
-        "  for (short i=0; i < %d; ++i) sum += ret[i];" % n_classes, 
-        "  for (short i=0; i < %d; ++i) ret[i] /= sum;" % n_classes, 
-      ] 
+    if n_classes > 1:
+      lines += [
+          "  short argmax = 0; ", 
+          "  for (int i = 0; i < %d; ++i) if (ret[i] > ret[argmax]) argmax = i; " % n_classes, 
+          "  if (ret[argmax] > 1e10) { " ,
+          "    for (int i = 0; i < %d; ++i) ret[i] = (i==argmax ? 1.: 0.); " % n_classes, 
+          "    return ret; ",
+          "  }", 
+          "  for (short i=0; i < %d; ++i) ret[i] = exp(ret[i]);" % n_classes, 
+          "  for (short i=0; i < %d; ++i) ret[i] = (ret[i] > 1e300?1e300:ret[i]);" % n_classes, 
+          "  long double sum = 0;", 
+          "  for (short i=0; i < %d; ++i) sum += ret[i];" % n_classes, 
+          "  for (short i=0; i < %d; ++i) ret[i] /= sum;" % n_classes, 
+        ] 
+    else:
+      lines += [
+        "  if (ret[0] > 1e10) ret[0] = 1.;",
+        "  ret[0] = 1. / (1 + exp(-ret[0]));"
+      ]
 
 
     lines += ["  return ret;", "}"]
