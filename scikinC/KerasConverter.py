@@ -19,7 +19,7 @@ class KerasConverter (BaseConverter):
 
     for iLayer, layer in enumerate(model.layers):
       kernel, bias = layer.get_weights()
-      lines.append ("inline float activation_%d (float x) " % iLayer);
+      lines.append ("inline double activation_%d (double x) " % iLayer);
       activation =  layer.get_config()['activation'] 
       if activation == 'sigmoid':
         lines.append ("{ return 1./(1 + exp(-x)); }")
@@ -36,7 +36,7 @@ class KerasConverter (BaseConverter):
       
     lines.append ("""
     extern "C" 
-    float* %s (float* ret, const float *input)
+    double* %s (double* ret, const double *input)
     {
     """ % (name))
 
@@ -51,17 +51,17 @@ class KerasConverter (BaseConverter):
       lines.append ("  // Bias shape: " + str(bias.shape))
       kernel_values = array2c(kernel) #"{%s}"%(',\n   '.join(["{%s}"%(','.join(["%18.13f"%x for x in row])) for row in kernel]))
       bias_values   = array2c(bias)   #"{%s}"% ( ",".join(["%18.13f"%x for x in bias]))
-      lines.append ("  const float kernel_%d[%d][%d] = \n  %s;" % (iLayer, kernel.shape[0], kernel.shape[1],kernel_values))
-      lines.append ("  const float bias_%d[%d] = %s;" % (iLayer, bias.shape[0], bias_values))
+      lines.append ("  const double kernel_%d[%d][%d] = \n  %s;" % (iLayer, kernel.shape[0], kernel.shape[1],kernel_values))
+      lines.append ("  const double bias_%d[%d] = %s;" % (iLayer, bias.shape[0], bias_values))
       
-    lines.append ("  float buffer_in[%d];" % nMax)
-    lines.append ("  float buffer_out[%d];" % nMax)
+    lines.append ("  double buffer_in[%d];" % nMax)
+    lines.append ("  double buffer_out[%d];" % nMax)
 
     lines.append ("  unsigned int i,j,c; ")
 
     lines.append ("\n\n\n")
     lines.append ("  // Load the input in the buffer")
-    lines.append ("  for (c = 0; c < 64; ++c) \n  buffer_in[c] = input[c];")
+    lines.append ("  for (c = 0; c < %d; ++c) \n    buffer_in[c] = input[c];" % nX)
 
     for iLayer, layer in enumerate(model.layers):
       kernel, bias = layer.get_weights()

@@ -3,7 +3,7 @@ import numpy as np
 def array2c (array, fmt = None):
   "Converts an array in a C string. fmt can be a %format, a callable or None"
   if fmt is None: 
-    fmt = str
+    fmt = lambda x: "%.20f" % x 
   elif isinstance (fmt, str): 
     fmt = lambda x: fmt % x 
 

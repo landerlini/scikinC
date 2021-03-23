@@ -17,7 +17,7 @@ class QuantileTransformerConverter (BaseConverter):
 
     lines . append ( """
     extern "C"
-    float qtc_interpolate_for_%(name)s ( float x, float *xs, float *ys, int N )
+    double qtc_interpolate_for_%(name)s ( double x, double *xs, double *ys, int N )
     {
       int min = 0;
       int max = N; 
@@ -53,11 +53,11 @@ class QuantileTransformerConverter (BaseConverter):
 
     lines.append ("""
     extern "C"
-    float *%(name)s (float *ret, const float *x)
+    double *%(name)s (double *ret, const double *x)
     {
       int c; 
-      float q[%(nFeatures)d][%(nQuantiles)d] = %(qString)s; 
-      float y[%(nQuantiles)d] = %(yString)s; 
+      double q[%(nFeatures)d][%(nQuantiles)d] = %(qString)s; 
+      double y[%(nQuantiles)d] = %(yString)s; 
 
       for (c = 0; c < %(nFeatures)d; ++c)
         ret[c] = qtc_interpolate_for_%(name)s (x[c], q[c], y, %(nQuantiles)d ); 
@@ -75,11 +75,11 @@ class QuantileTransformerConverter (BaseConverter):
 
     lines.append ("""
     extern "C"
-    float *%(name)s_inverse (float *ret, const float *x)
+    double *%(name)s_inverse (double *ret, const double *x)
     {
       int c; 
-      float q[%(nFeatures)d][%(nQuantiles)d] = %(qString)s; 
-      float y[%(nQuantiles)d] = %(yString)s; 
+      double q[%(nFeatures)d][%(nQuantiles)d] = %(qString)s; 
+      double y[%(nQuantiles)d] = %(yString)s; 
 
       for (c = 0; c < %(nFeatures)d; ++c)
         ret[c] = qtc_interpolate_for_%(name)s ( x[c], y, q[c], %(nQuantiles)d ); 

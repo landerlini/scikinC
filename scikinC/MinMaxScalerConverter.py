@@ -14,13 +14,13 @@ class MinMaxScalerConverter (BaseConverter):
 
     lines.append ( """
     extern "C" 
-    float* %(name)s (float* ret, const float *input)
+    double* %(name)s (double* ret, const double *input)
     {
       int c; 
-      float input_min[] = %(inputMin)s; 
-      float input_max[] = %(inputMax)s; 
-      float output_min = %(outputMin)f; 
-      float output_max = %(outputMax)f; 
+      double input_min[] = %(inputMin)s; 
+      double input_max[] = %(inputMax)s; 
+      double output_min = %(outputMin)f; 
+      double output_max = %(outputMax)f; 
 
       for (int c = 0; c < %(nFeatures)d; ++c)
         ret [c] = (input[c] - input_min[c]) / (input_max[c] - input_min[c]) 
@@ -42,13 +42,13 @@ class MinMaxScalerConverter (BaseConverter):
 
     lines.append ( """
     extern "C" 
-    float* %(name)s_inverse (float* ret, const float *input)
+    double* %(name)s_inverse (double* ret, const double *input)
     {
       int c; 
-      float input_min = %(inputMin)f; 
-      float input_max = %(inputMax)f; 
-      float output_min[] = %(outputMin)s; 
-      float output_max[] = %(outputMax)s; 
+      double input_min = %(inputMin)f; 
+      double input_max = %(inputMax)f; 
+      double output_min[] = %(outputMin)s; 
+      double output_max[] = %(outputMax)s; 
 
       for (int c = 0; c < %(nFeatures)d; ++c)
         ret [c] = (input[c] - input_min) / (input_max - input_min) 

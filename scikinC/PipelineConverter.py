@@ -25,14 +25,14 @@ class PipelineConverter (BaseConverter):
 
     lines.append("""
     extern "C"
-    float *%(name)s (float* ret, const float *x)
+    double *%(name)s (double* ret, const double *x)
     {
     """ % (dict(name=name)))
 
     input_name = 'x' 
     for sname, step in model.steps[:-1]:
       lines.append ( """
-      float out_%(name)s[%(nFeatures)d];
+      double out_%(name)s[%(nFeatures)d];
       %(name)s ( out_%(name)s, %(input_name)s  );
       """ % dict (
         name = prefixed(sname),
@@ -58,14 +58,14 @@ class PipelineConverter (BaseConverter):
 
     lines.append("""
     extern "C"
-    float *%(name)s_inverse (float* ret, const float *x)
+    double *%(name)s_inverse (double* ret, const double *x)
     {
     """ % (dict(name=name)))
 
     input_name = 'x' 
     for sname, step in model.steps[::-1][:-1]:
       lines.append ( """
-      float out_%(name)s[%(nFeatures)d];
+      double out_%(name)s[%(nFeatures)d];
       %(name)s_inverse ( out_%(name)s, %(input_name)s  );
       """ % dict (
         name = prefixed(sname),

@@ -16,10 +16,10 @@ class DecorrTransformerConverter (BaseConverter):
 
     lines.append ( """
     extern "C"
-    float * %(name)s (float *ret, const float *x)
+    double * %(name)s (double *ret, const double *x)
     {
       int i, j; 
-      float e[%(nFeatures)d][%(nFeatures)d] = %(eString)s; 
+      double e[%(nFeatures)d][%(nFeatures)d] = %(eString)s; 
 
       for (i = 0; i < %(nFeatures)d; ++i)
         ret [i] = 0;
@@ -33,10 +33,10 @@ class DecorrTransformerConverter (BaseConverter):
     }
 
     extern "C"
-    float * %(name)s_inverse (float *ret, const float *x)
+    double * %(name)s_inverse (double *ret, const double *x)
     {
       int i, j; 
-      float e[%(nFeatures)d][%(nFeatures)d] = %(eString)s; 
+      double e[%(nFeatures)d][%(nFeatures)d] = %(eString)s; 
 
       for (i = 0; i < %(nFeatures)d; ++i)
         ret [i] = 0;
