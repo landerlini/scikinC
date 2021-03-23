@@ -93,4 +93,4 @@ other:
  * DecorrTransform from TrackPar (LHCb internal) 
 
 ## Related projects
-LTWNN is a more mature software package that is based on the same philosophy. The main difference is that lwtnn compiles the network architecture at compile-time and loads the weights at runtime, while with scikinC both the architecture and the weights to be loaded at runtime. As a side benefit, scikinC is a C rather than a C++ project which has less requirements. On the other hand, LTWNN supports input and output tensors of various shapes, while scikinC only supports scalar inputs and scalar outputs.
+LWTNN is a more mature software package that is based on the same philosophy. The main difference is that LWTNN compiles the network architecture at compile-time and loads weights and some hyperparameters at runtime, while with scikinC both the architecture and the weights to be loaded at runtime. As a side benefit, scikinC is a C rather than a C++ project which has less requirements. On the other hand, LWTNN supports input and output tensors of various shapes, while scikinC only supports scalar inputs and scalar outputs.
