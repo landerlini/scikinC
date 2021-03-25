@@ -56,59 +56,132 @@ Once compiled, the binary file contains everything that is needed to
 evaluate the ML function and with no external dependency beyond standard 
 C libraries.
 
-## CLI
+`scikinC` is designed to be as modular as possible in order to make it 
+easy to extend it by adding converters for additional scikit-learn
+models and keras layers.
 
-Create the C file with the exported model
-```
-scikinC some_model.pkl > Cfile.C
+## Command Line Interface
+The easiest way to use scikinC is through its Command Line Interface (CLI).
+To provide an example, let's consider the following simple python script
+that train a preprocessing step from scikit learn and dumps it into a 
+pickle file. 
+
+```python
+import numpy as np
+import pickle
+
+from sklearn.preprocessing import MinMaxScaler 
+
+minmax = MinMaxScaler()
+minmax.fit ( np.random.normal(0,5, (2,1000) )
+   
+with open("example_scaler.pkl", 'wb') as f:
+  pickle.dump (minmax, f)
 ```
 
-Compile the C file for dynamic loading 
-```
-gcc -o Cfile.so Cfile.C -shared -fPIC -Ofast
+Once the file is created, one can convert the scaler 
+into a C file, as 
+```bash
+scikinC example_scaler.pkl > Cfile.C
 ```
 
-Use it everywhere
+Finally you can compile the C file for dynamic loading 
+```bash
+gcc -o deployed_scaler.so Cfile.C -shared -fPIC -Ofast
 ```
+
+## Using the compiled models in C/C++ applications
+Considering the example producing the shared object 
+`deployed_object.so` above, one can easily evaluate 
+it from a C program, linking the shared object at
+run-time and then pointing to the function:
+```C
+// C Library for dynamic linking
 #include  <dlfcn.h>
 
+// Define the type for generic machine learning functions
 typedef float *(*mlfunc)(float *, const float*);
 
 void somewhere_in_your_code (void)
 {
-  void *handle = dlopen ( "./Cfile.so", RTLD_LAZY );
+  // Open the shared object library 
+  void *handle = dlopen ( "./deployed_scaler.so", RTLD_LAZY );
   if (!handle)
-    std::cout << "dlerror: " << dlerror() << std::endl; 
+    exit(1);
 
-  mlfunc minmax = mlfunc(dlsym (handle, "some_model")); 
+  // Load the scaler by name (by default, the pickle file name is used as name)
+  mlfunc minmax = mlfunc(dlsym (handle, "example_scaler")); 
+
+  // Prepares the input and output buffer and evaluate the function
   float *inp [] = { /* your input goes here */ };
   float *out [ /*output n_features goes here*/ ];
   minmax ( out, inp ); 
 
+  // Optionally, closes the linked library file
   dlclose(handle); 
 }
 ```
-**Note**: the symbol to load through dlsym is the name of the pickle file, 
-stripped of its extension, if any. In this case `some_model.pkl` gets compiled 
-in the symbol `some_model`. 
+A few notes:
+ 1. the function prototype (`FLOAT_T* <name> (FLOAT_T* output, const FLOAT_T*)`)
+    is the same for all the models converted by scikinC. This is basically the
+    only strict requirement on what models can be converted.
+ 2. The floating point type, `float` by default, can be updgraded for
+    numerically instable models (`scikinC --float_t double` or scikinC --float_t "long double"`)
+ 3. the symbol to load through dlsym is the name of the pickle file, 
+    stripped of its extension, if any. In this case `some_model.pkl` gets compiled 
+    in the symbol `some_model`. The compiled function name can be specified as
+    ```bash
+    scikinC desired_name=example_scaler.pkl > Cfile.C
+    ```
+    this is especially useful when the pickle name contains non alphanumeric
+    characters which would break the C compilation (consider for example a 
+    pickle file named "example-scaler.pkl"
+ 4. More than one model can be compiled in a single shared object
+    ```bash
+    gcc -o deployed_scaler.so Cfile1.C Cfile2.C Cfile3.C -shared -fPIC -Ofast
+    ```
+    and this considered good practice for bundling together preprocessing 
+    and machine learning steps. 
+
 
 ## Implemented converters
 
-scikit-learn:
- * GradientBoostingClassifier (binary classification and multiclass)
- * MinMaxScaler 
- * QuantileTransformer
- * Pipeline (except for pipelines including other pipelines)
+#### Scikit-Learn preprocessing
+  | Model                  | Implementation  | Test      | Notes                         |
+  | ---------------------- | --------------- | --------- | ----------------------------- |
+  | `MinMaxScaler`         | Available       | Available |                               |
+  | `StandardScaler`       | Available       | Available |                               |
+  | `QuantileTransformer`  | Available       | Available |                               |
+  | `Pipeline`             | Available       | Partial   | Pipelines of pipelines break  |
 
-keras:
- * Sequential model
- * Dense layer 
- * tanh activation function
- * relu activation function 
- * sigmoid activation function 
+#### Scikit-Learn models
+  | Model                        | Implementation  | Test      | Notes                         |
+  | ---------------------------- | --------------- | --------- | ----------------------------- |
+  | `GradientBoostingClassifier` | Available       | Available |                               |
 
-other:
- * DecorrTransform from TrackPar (LHCb internal) 
+#### Keras Models
+  | Model                        | Implementation  | Test      | Notes                         |
+  | ---------------------------- | --------------- | --------- | ----------------------------- |
+  | `Sequential`                 | Available       | Available |                               |
+
+#### Keras Layers
+  | Model                        | Implementation  | Test      | Notes                         |
+  | ---------------------------- | --------------- | --------- | ----------------------------- |
+  | `Dense`                      | Available       | Available |                               |
+  | `PReLU`                      | Available       | Available |                               |
+
+#### Keras Activation functions
+  | Model                        | Implementation  | Test      | Notes                         |
+  | ---------------------------- | --------------- | --------- | ----------------------------- |
+  | `tanh`                       | Available       | Available |                               |
+  | `sigmoid`                    | Available       | Available |                               |
+  | `relu`                       | Available       | Available |                               |
+
 
 ## Related projects
-LWTNN is a more mature software package that is based on the same philosophy. The main difference is that LWTNN compiles the network architecture at compile-time and loads weights and some hyperparameters at runtime, while with scikinC both the architecture and the weights to be loaded at runtime. As a side benefit, scikinC is a C rather than a C++ project which has less requirements. On the other hand, LWTNN supports input and output tensors of various shapes, while scikinC only supports scalar inputs and scalar outputs.
+  * [LWTNN](https://github.com/lwtnn/lwtnn)
+  * [SimpleNN](https://gitlab.cern.ch/mschille/simplenn)
+  * [TensorFlow C API](https://www.tensorflow.org/install/lang_c)
+  * [GaudiTensorFlow](https://gitlab.cern.ch/lhcb/LHCb/-/tree/master/Tools/GaudiTensorFlow)
+ 
+
