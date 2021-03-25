@@ -1,5 +1,8 @@
 from scikinC import BaseConverter 
 class GBDTC_Converter (BaseConverter):
+  """
+  GradientBoostingDecision Tree converter
+  """
 
   @staticmethod 
   def _singletree (tree, node):

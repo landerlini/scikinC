@@ -1,6 +1,9 @@
 import os 
 from datetime import datetime 
 class BaseConverter:
+  """
+  BaseConverter providing header and float datatype to all converters
+  """
   def __init__(self, 
       float_t='float', 
       copyright=os.environ["USER"], 
@@ -10,6 +13,7 @@ class BaseConverter:
     self.copyright = copyright
 
   def header(self):
+    "Return the header for the generated C file"
     return [
     "/***************************************************************************/\n"
     "/* File automatically generated with scikinC (github.com/landerli/scikinC) */\n"

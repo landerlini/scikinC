@@ -17,7 +17,7 @@ __CONVERTERS = {
       'Pipeline': 'PipelineConverter', 
 
       ## Keras 
-      'Sequential': 'KerasConverter', 
+      'Sequential': 'KerasSequentialConverter', 
     }
 
 def convert ( some_object, *args, **kwargs ):

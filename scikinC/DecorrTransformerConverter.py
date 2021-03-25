@@ -4,6 +4,11 @@ from scipy import stats
 from ._tools import array2c 
 
 class DecorrTransformerConverter (BaseConverter):
+  """
+  Converter for a decorrelation step not defined in scikit-learn.
+  This is only present for compatibility with existing applications 
+  in the LHCb Software stack. 
+  """
 
   def convert (self, model, name = None): 
     lines = self.header() 
