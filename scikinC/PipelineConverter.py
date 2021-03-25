@@ -7,9 +7,6 @@ from scikinC import convert
 
 
 class PipelineConverter (BaseConverter):
-  def __init__(self):
-    pass
-
   def convert(self, model, name=None):
     lines = [] 
 
@@ -25,14 +22,14 @@ class PipelineConverter (BaseConverter):
 
     lines.append("""
     extern "C"
-    double *%(name)s (double* ret, const double *x)
+    FLOAT_T *%(name)s (FLOAT_T* ret, const FLOAT_T *x)
     {
     """ % (dict(name=name)))
 
     input_name = 'x' 
     for sname, step in model.steps[:-1]:
       lines.append ( """
-      double out_%(name)s[%(nFeatures)d];
+      FLOAT_T out_%(name)s[%(nFeatures)d];
       %(name)s ( out_%(name)s, %(input_name)s  );
       """ % dict (
         name = prefixed(sname),
@@ -58,14 +55,14 @@ class PipelineConverter (BaseConverter):
 
     lines.append("""
     extern "C"
-    double *%(name)s_inverse (double* ret, const double *x)
+    FLOAT_T *%(name)s_inverse (FLOAT_T* ret, const FLOAT_T *x)
     {
     """ % (dict(name=name)))
 
     input_name = 'x' 
     for sname, step in model.steps[::-1][:-1]:
       lines.append ( """
-      double out_%(name)s[%(nFeatures)d];
+      FLOAT_T out_%(name)s[%(nFeatures)d];
       %(name)s_inverse ( out_%(name)s, %(input_name)s  );
       """ % dict (
         name = prefixed(sname),

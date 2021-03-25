@@ -5,11 +5,21 @@ import pickle
 import sys
 
 
+def _clean (string):
+  for char in "-/:?#.<>^()[]{}\|!\"$%&@#,":
+    string = string.replace (char, "_")
+  return string 
+
+
 def _basename (filename):
   if "." not in filename: 
     return os.path.basename(filename) 
-  return re.findall ( "([A-Za-z0-9_\-]*)\.[A-Za-z0-9_\-\.]",
-      os.path.basename(filename)) [0] 
+  return _clean (
+      re.findall ( "([A-Za-z0-9_\-]*)\.[A-Za-z0-9_\-\.]",
+        os.path.basename(filename)) [0] 
+      )
+
+
 
 def load_from_string ( string ):
   what = None
@@ -19,9 +29,8 @@ def load_from_string ( string ):
     name, string = string.split("=")
     print ("Name: %s " % string, file=sys.stderr)
     print ("Object: %s " % string, file=sys.stderr)
+    name = _clean (name) 
 
-  for char in "-/:?#.<>^()[]{}\|!\"$%&@#,":
-    name = name.replace (char, "_")
 
   if os.path.isfile (string):
     try:

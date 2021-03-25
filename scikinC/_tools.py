@@ -20,6 +20,8 @@ def get_n_features (algo):
     return algo.layers[-1].kernel.shape[-1] 
   elif algo.__class__.__name__ == 'DecorrTransformer':
     return algo.eig.shape[-1] 
+  elif algo.__class__.__name__ == 'StandardScaler':
+    return algo.mean_.shape[-1] if algo.mean_ is not None else algo.var_.shape[-1]
   elif algo.__class__.__name__ == 'MinMaxScaler':
     return algo.data_min_.shape[-1] 
   elif algo.__class__.__name__ == 'QuantileTransformer':

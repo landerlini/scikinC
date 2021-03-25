@@ -34,9 +34,27 @@ as microcontroller and FPGAs.
 As in many other circumstances, distributing binaries hinder software security, 
 exposing clients to more severe risks than dedicated ML format. Users should be 
 aware that plugging untrusted shared objects to their program may result in 
-severe security breechs. 
+severe security breachs. 
 
+## Logic
+`scikinC` is a transpiler for scikit-learn and keras models generating
+C files with `extern "C"` functions sharing the same signature:
+```
+FLOAT_T* <function_name> (FLOAT_T* output, const FLOAT_T* input);
+```
+Everything which is not either the input or the output is hardcoded in 
+the C function, including:
+ * the shape of the input and output tensors;
+ * the structure of the ML method (number of trees in a forest o number of
+   layers in a DNN);
+ * the weights of the ML method.
 
+The generated C function is inteded for immediate compilation with `gcc`, 
+but most C/C++ compiler should be supported. 
+
+Once compiled, the binary file contains everything that is needed to 
+evaluate the ML function and with no external dependency beyond standard 
+C libraries.
 
 ## CLI
 

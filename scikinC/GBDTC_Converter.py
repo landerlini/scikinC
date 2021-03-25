@@ -1,13 +1,11 @@
 from scikinC import BaseConverter 
 class GBDTC_Converter (BaseConverter):
-  def __init__ (self):
-    pass 
 
   @staticmethod 
   def _singletree (tree, node):
     "Single-tree traversal"
     if tree.feature [node] >= 0:
-      return "(x[%d] <= %f ? %s : %s)" % (tree.feature[node], 
+      return "(x[%d] <= %.20f ? %s : %s)" % (tree.feature[node], 
           tree.threshold[node],
           GBDTC_Converter._singletree ( tree, tree.children_left[node] ), 
           GBDTC_Converter._singletree ( tree, tree.children_right[node] ) )  
@@ -24,15 +22,15 @@ class GBDTC_Converter (BaseConverter):
         lines.append ( "/*  ret [ %d ]   is the probability for category:  %-15s */" %
             ( iClass,  str(bdt.classes_[iClass]) ) )
     
-    retvar = "double ret[%d]" % n_classes 
-    invar  = "double x[%d]" % bdt.n_features_ 
+    retvar = "FLOAT_T ret[%d]" % n_classes 
+    invar  = "FLOAT_T x[%d]" % bdt.n_features_ 
     lines += [
         "#include <math.h>",
         "extern \"C\"",
-        "double *%s (%s, const %s)" % (name or "bdt", retvar, invar), 
+        "FLOAT_T *%s (%s, const %s)" % (name or "bdt", retvar, invar), 
         "{", 
         "  for (short i=0; i < %d; ++i) ret[i] = 0.f;" % n_classes, 
-        "  double %s;" % (", ".join("y%02d" % d for d in range(n_classes)) )
+        "  FLOAT_T %s;" % (", ".join("y%02d" % d for d in range(n_classes)) )
       ]
 
     for iTree, tree in enumerate(bdt.estimators_):

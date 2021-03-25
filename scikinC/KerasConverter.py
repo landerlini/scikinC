@@ -1,11 +1,8 @@
 from scikinC import BaseConverter 
+from scikinC import layers 
 from ._tools import array2c 
 
 class KerasConverter (BaseConverter):
-  def __init__ (self):
-    pass 
-
-
 
   def convert (self, model, name = None): 
     if name is None:
@@ -17,83 +14,60 @@ class KerasConverter (BaseConverter):
 
     """] 
 
-    for iLayer, layer in enumerate(model.layers):
-      kernel, bias = layer.get_weights()
-      lines.append ("inline double activation_%d (double x) " % iLayer);
-      activation =  layer.get_config()['activation'] 
-      if activation == 'sigmoid':
-        lines.append ("{ return 1./(1 + exp(-x)); }")
-      elif activation == 'tanh':
-        lines.append ("{ return tanh(x);}")
-      elif activation == 'relu':
-        lines.append ("{ return x > 0 ? x : 0;}")
-      elif activation == 'linear':
-        lines.append ("{ return x;}")
-      else:
-        raise KeyError ("Unexpected activation %s"%activation)
-      
+    converters = [] 
 
-      
-    lines.append ("""
-    extern "C" 
-    double* %s (double* ret, const double *input)
-    {
-    """ % (name))
+    for layer in model.layers:
+      class_ = layer.__class__.__name__
+      if not hasattr (layers, class_):
+        raise NotImplementedError (
+            "No implementation found for layer %s (%s)" % (layer.name, class_)
+            )
+
+      converters.append (getattr(layers, class_) (name, layer))
+
+
+    for converter in converters:
+      lines += [ converter.definition() ] 
 
     nX = model.layers[0].kernel.shape[0] 
-    nY = model.layers[-1].kernel.shape[-1] 
-    nMax = max (*[l.kernel.shape[1] for l in model.layers]+[nX]) 
+    nY = model.layers[-1].output_shape[-1] 
+    nMax = max (*[l.output_shape[1] for l in model.layers]+[nX]) 
 
-    for iLayer, layer in enumerate(model.layers):
-      lines.append ("  // Declare the arrays in the stack")
-      kernel, bias = layer.get_weights()
-       
-      lines.append ("  // Bias shape: " + str(bias.shape))
-      kernel_values = array2c(kernel) #"{%s}"%(',\n   '.join(["{%s}"%(','.join(["%18.13f"%x for x in row])) for row in kernel]))
-      bias_values   = array2c(bias)   #"{%s}"% ( ",".join(["%18.13f"%x for x in bias]))
-      lines.append ("  const double kernel_%d[%d][%d] = \n  %s;" % (iLayer, kernel.shape[0], kernel.shape[1],kernel_values))
-      lines.append ("  const double bias_%d[%d] = %s;" % (iLayer, bias.shape[0], bias_values))
-      
-    lines.append ("  double buffer_in[%d];" % nMax)
-    lines.append ("  double buffer_out[%d];" % nMax)
-
-    lines.append ("  unsigned int i,j,c; ")
-
-    lines.append ("\n\n\n")
-    lines.append ("  // Load the input in the buffer")
-    lines.append ("  for (c = 0; c < %d; ++c) \n    buffer_in[c] = input[c];" % nX)
-
-    for iLayer, layer in enumerate(model.layers):
-      kernel, bias = layer.get_weights()
-
-      lines.append ( "  // Processing layer %i " % iLayer )
-      lines.append ( """
-      for (c = 0; c < {n_out}; ++c ) 
-        buffer_out[c] = bias_{iLayer}[c];
-        
-      for (c = 0; c < {n_out}; ++c )
-        for (i = 0; i < {n_in}; ++i)
-          buffer_out[c] += buffer_in[i] * kernel_{iLayer}[i][c];
-      
-      // Prepares for next layer 
-      for (c = 0; c < {n_out}; ++c )
-        buffer_in[c] = activation_{iLayer}(buffer_out[c]);
-        
-      """.format (
-          n_in = kernel.shape[0],
-          n_out = kernel.shape[1],
-          iLayer = iLayer,
-      ))
-      
-    last_kernel, last_bias = model.layers[-1].get_weights()
     lines.append ("""
-      i = 0;
-      for (c = 0; c < {n_out}; ++c)
-        ret[c] = buffer_in[c]; 
-      
-      return ret;
-    """.format(n_out = nY))
+    extern "C"
+    FLOAT_T* %(name)s (FLOAT_T* ret, const FLOAT_T *input)
+    {
+      int i;
+      FLOAT_T ibuf [%(nMax)d]; 
+      FLOAT_T obuf [%(nMax)d]; 
 
-    lines.append ("}")
+      FLOAT_T *b1 = ibuf;
+      FLOAT_T *b2 = obuf;
+      FLOAT_T *b3 = NULL; 
+
+      for (i=0; i<%(nX)d; ++i)
+        b1[i] = input[i]; 
+
+      """ % dict(
+        name = name,
+        nMax = nMax,
+        nX = nX,
+        ))
+
+    for converter in converters:
+      lines.append ("""
+      %(call)s
+      b3=b2; b2=b1; b1=b3; b3=NULL; 
+      """ % dict(call=converter.call("b2", "b1")))
+
+    lines.append ("""
+      for (i=0; i<%(nY)d; ++i)
+        ret [i] = b1[i]; 
+        
+      return ret;
+    }
+    """ % dict(nY=nY))
+
+
     return "\n".join(lines) 
 

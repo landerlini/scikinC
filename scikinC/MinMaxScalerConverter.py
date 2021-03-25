@@ -2,10 +2,6 @@ from scikinC import BaseConverter
 from ._tools import array2c 
 
 class MinMaxScalerConverter (BaseConverter):
-  def __init__ (self):
-    pass 
-
-
 
   def convert (self, model, name = None): 
     lines = self.header() 
@@ -14,13 +10,13 @@ class MinMaxScalerConverter (BaseConverter):
 
     lines.append ( """
     extern "C" 
-    double* %(name)s (double* ret, const double *input)
+    FLOAT_T* %(name)s (FLOAT_T* ret, const FLOAT_T *input)
     {
       int c; 
-      double input_min[] = %(inputMin)s; 
-      double input_max[] = %(inputMax)s; 
-      double output_min = %(outputMin)f; 
-      double output_max = %(outputMax)f; 
+      FLOAT_T input_min[] = %(inputMin)s; 
+      FLOAT_T input_max[] = %(inputMax)s; 
+      FLOAT_T output_min = %(outputMin)f; 
+      FLOAT_T output_max = %(outputMax)f; 
 
       for (int c = 0; c < %(nFeatures)d; ++c)
         ret [c] = (input[c] - input_min[c]) / (input_max[c] - input_min[c]) 
@@ -42,13 +38,13 @@ class MinMaxScalerConverter (BaseConverter):
 
     lines.append ( """
     extern "C" 
-    double* %(name)s_inverse (double* ret, const double *input)
+    FLOAT_T* %(name)s_inverse (FLOAT_T* ret, const FLOAT_T *input)
     {
       int c; 
-      double input_min = %(inputMin)f; 
-      double input_max = %(inputMax)f; 
-      double output_min[] = %(outputMin)s; 
-      double output_max[] = %(outputMax)s; 
+      FLOAT_T input_min = %(inputMin)f; 
+      FLOAT_T input_max = %(inputMax)f; 
+      FLOAT_T output_min[] = %(outputMin)s; 
+      FLOAT_T output_max[] = %(outputMax)s; 
 
       for (int c = 0; c < %(nFeatures)d; ++c)
         ret [c] = (input[c] - input_min) / (input_max - input_min) 

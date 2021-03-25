@@ -4,10 +4,6 @@ from scipy import stats
 from ._tools import array2c 
 
 class QuantileTransformerConverter (BaseConverter):
-  def __init__ (self):
-    pass 
-
-
   def convert (self, model, name = None): 
     lines = self.header() 
 
@@ -17,7 +13,7 @@ class QuantileTransformerConverter (BaseConverter):
 
     lines . append ( """
     extern "C"
-    double qtc_interpolate_for_%(name)s ( double x, double *xs, double *ys, int N )
+    FLOAT_T qtc_interpolate_for_%(name)s ( FLOAT_T x, FLOAT_T *xs, FLOAT_T *ys, int N )
     {
       int min = 0;
       int max = N; 
@@ -53,11 +49,11 @@ class QuantileTransformerConverter (BaseConverter):
 
     lines.append ("""
     extern "C"
-    double *%(name)s (double *ret, const double *x)
+    FLOAT_T *%(name)s (FLOAT_T *ret, const FLOAT_T *x)
     {
       int c; 
-      double q[%(nFeatures)d][%(nQuantiles)d] = %(qString)s; 
-      double y[%(nQuantiles)d] = %(yString)s; 
+      FLOAT_T q[%(nFeatures)d][%(nQuantiles)d] = %(qString)s; 
+      FLOAT_T y[%(nQuantiles)d] = %(yString)s; 
 
       for (c = 0; c < %(nFeatures)d; ++c)
         ret[c] = qtc_interpolate_for_%(name)s (x[c], q[c], y, %(nQuantiles)d ); 
@@ -75,11 +71,11 @@ class QuantileTransformerConverter (BaseConverter):
 
     lines.append ("""
     extern "C"
-    double *%(name)s_inverse (double *ret, const double *x)
+    FLOAT_T *%(name)s_inverse (FLOAT_T *ret, const FLOAT_T *x)
     {
       int c; 
-      double q[%(nFeatures)d][%(nQuantiles)d] = %(qString)s; 
-      double y[%(nQuantiles)d] = %(yString)s; 
+      FLOAT_T q[%(nFeatures)d][%(nQuantiles)d] = %(qString)s; 
+      FLOAT_T y[%(nQuantiles)d] = %(yString)s; 
 
       for (c = 0; c < %(nFeatures)d; ++c)
         ret[c] = qtc_interpolate_for_%(name)s ( x[c], y, q[c], %(nQuantiles)d ); 

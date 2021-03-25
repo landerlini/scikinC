@@ -5,11 +5,13 @@ Set of tools to convert scikit learn and tensorflow into plain C functions
 from scikinC.BaseConverter import BaseConverter 
 from scikinC               import ModelLoader 
 
+version = '0.1'
 
 __CONVERTERS = {
       ## Scikit-learn 
       'GradientBoostingClassifier': 'GBDTC_Converter', 
       'MinMaxScaler': 'MinMaxScalerConverter', 
+      'StandardScaler': 'StandardScalerConverter', 
       'QuantileTransformer': 'QuantileTransformerConverter', 
       'DecorrTransformer': 'DecorrTransformerConverter', 
       'Pipeline': 'PipelineConverter', 

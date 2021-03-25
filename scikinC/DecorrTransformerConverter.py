@@ -4,9 +4,6 @@ from scipy import stats
 from ._tools import array2c 
 
 class DecorrTransformerConverter (BaseConverter):
-  def __init__ (self):
-    pass 
-
 
   def convert (self, model, name = None): 
     lines = self.header() 
@@ -16,10 +13,10 @@ class DecorrTransformerConverter (BaseConverter):
 
     lines.append ( """
     extern "C"
-    double * %(name)s (double *ret, const double *x)
+    FLOAT_T * %(name)s (FLOAT_T *ret, const FLOAT_T *x)
     {
       int i, j; 
-      double e[%(nFeatures)d][%(nFeatures)d] = %(eString)s; 
+      FLOAT_T e[%(nFeatures)d][%(nFeatures)d] = %(eString)s; 
 
       for (i = 0; i < %(nFeatures)d; ++i)
         ret [i] = 0;
@@ -33,10 +30,10 @@ class DecorrTransformerConverter (BaseConverter):
     }
 
     extern "C"
-    double * %(name)s_inverse (double *ret, const double *x)
+    FLOAT_T * %(name)s_inverse (FLOAT_T *ret, const FLOAT_T *x)
     {
       int i, j; 
-      double e[%(nFeatures)d][%(nFeatures)d] = %(eString)s; 
+      FLOAT_T e[%(nFeatures)d][%(nFeatures)d] = %(eString)s; 
 
       for (i = 0; i < %(nFeatures)d; ++i)
         ret [i] = 0;
