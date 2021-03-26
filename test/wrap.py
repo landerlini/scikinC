@@ -76,7 +76,7 @@ def deploy_pickle (name, obj, float_t = "float"):
       ) 
 
 
-  ret = DeployedModel(tmpfile+".C", compiled = '%s.so' % tmpfile) 
+  ret = DeployedModel(tmpfile+".C", compiled = './%s.so' % tmpfile) 
 
   os.system ("rm %(tmpfile)s.pkl %(tmpfile)s.C" % {'tmpfile': tmpfile} )
 
@@ -101,7 +101,7 @@ def deploy_keras (name, obj, float_t = "float"):
       ) 
 
 
-  ret = DeployedModel(tmpfile+".C", compiled = '%s.so' % tmpfile) 
+  ret = DeployedModel(tmpfile+".C", compiled = './%s.so' % tmpfile) 
 
   os.system ("rm -r %(tmpfile)s %(tmpfile)s.C" % {'tmpfile': tmpfile} )
 
