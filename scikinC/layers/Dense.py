@@ -10,8 +10,7 @@ class Dense (BaseLayerConverter):
     """Return the definition of the layer function"""
     ret = []
 
-    nX = self.layer.kernel.shape[0] 
-    nY = self.layer.kernel.shape[-1] 
+    nX, nY = self.layer.kernel.shape
 
     kernel, bias = self.layer.get_weights()
 
@@ -20,16 +19,17 @@ class Dense (BaseLayerConverter):
         FLOAT_T* %(layername)s (FLOAT_T* ret, const FLOAT_T* input)
         {
             int i, j; 
-            const FLOAT_T kernel[%(nX)d][%(nY)d] = %(kernel_values)s;
+            const FLOAT_T kernel[%(nY)d][%(nX)d] = %(kernel_values)s;
             const FLOAT_T bias[%(nY)d] = %(bias_values)s;
 
             for (i=0; i < %(nY)d; ++i)
             {
               ret[i] = bias[i]; 
+              const FLOAT_T *row = kernel[i];
               for (j=0; j<%(nX)d; ++j)
-                ret[i] += input[j] * kernel[j][i];
+                ret[i] += input[j] * row[j];
               
-              ret[i] = %(activate)s;
+              %(activate)s
             }
 
             return ret; 
@@ -38,7 +38,7 @@ class Dense (BaseLayerConverter):
           layername = self.name, 
           nX = nX,
           nY = nY,
-          kernel_values = array2c (kernel),
+          kernel_values = array2c (kernel.T),
           bias_values = array2c (bias),
           activate = self.activate('ret[i]'),
         )]
