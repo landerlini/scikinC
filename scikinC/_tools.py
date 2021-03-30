@@ -3,12 +3,17 @@ import numpy as np
 def array2c (array, fmt = None):
   "Converts an array in a C string. fmt can be a %format, a callable or None"
   if fmt is None: 
-    fmt = lambda x: "%.20f" % x 
+    fmt_ = lambda x: "%.20f" % x 
   elif isinstance (fmt, str): 
-    fmt = lambda x: fmt % x 
+    fmt_ = lambda x: fmt % x 
+  else:
+    fmt_ = fmt
+
+  if isinstance (array, (list, tuple, set)):
+    array = np.asarray(array) 
 
   if isinstance (array, (int,float,str)) or len(array.shape) == 0: 
-    return fmt(array) 
+    return fmt_(array) 
 
   return "{%s}"%(", ".join([array2c(row,fmt) for row in array]))
 
