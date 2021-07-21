@@ -95,7 +95,7 @@ class GBDTUnrollingConverter (BaseConverter):
     else:
       lines += [
         "  if (ret[0] > 1e10) ret[0] = 1.;",
-        "  ret[0] = 1. / (1 + exp(-ret[0]));"
+        "  else ret[0] = 1. / (1 + exp(-ret[0]));"
       ]
 
 

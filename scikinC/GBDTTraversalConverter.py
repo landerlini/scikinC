@@ -150,7 +150,7 @@ class GBDTTraversalConverter (BaseConverter):
     else:
       lines += [
         "  if (acc[0] > 1e10) acc[0] = 1.;",
-        "  acc[0] = 1. / (1 + exp(-acc[0]));"
+        "  else acc[0] = 1. / (1 + exp(-acc[0]));"
       ]
 
 
