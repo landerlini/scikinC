@@ -1,8 +1,10 @@
 import sys
+
+import numpy as np
+
 from scikinC import BaseConverter 
 from scikinC.GBDTUnrollingConverter import GBDTUnrollingConverter 
 from scikinC.GBDTTraversalConverter import GBDTTraversalConverter 
-import numpy as np
 
 
 class GBDTC_Converter (BaseConverter):
@@ -16,7 +18,7 @@ class GBDTC_Converter (BaseConverter):
 
   def convert(self, bdt, name=None):
     if bdt.max_depth <= 5:
-      return GBDTUnrollingConverter (*self.args, *self.kwargs).convert(bdt, name)
+      return GBDTUnrollingConverter (*self.args, **self.kwargs).convert(bdt, name)
 
-    return GBDTTraversalConverter (*self.args, *self.kwargs).convert(bdt, name)
+    return GBDTTraversalConverter (*self.args, **self.kwargs).convert(bdt, name)
 

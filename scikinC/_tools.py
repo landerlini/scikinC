@@ -1,5 +1,7 @@
 import numpy as np 
+from sklearn.dummy import DummyClassifier
 
+################################################################################
 def array2c (array, fmt = None):
   "Converts an array in a C string. fmt can be a %format, a callable or None"
   if fmt is None: 
@@ -18,6 +20,7 @@ def array2c (array, fmt = None):
   return "{%s}"%(", ".join([array2c(row,fmt) for row in array]))
 
 
+################################################################################
 def get_n_features (algo):
   if hasattr(algo, 'n_features'):    return algo.n_features  
   elif hasattr(algo, 'n_features_'): return algo.n_features_  
@@ -35,3 +38,18 @@ def get_n_features (algo):
     return get_n_features (algo.steps[-1]) 
 
   raise TypeError ("Cannot determine output features for %s" % type(algo))
+
+
+################################################################################
+def retrieve_prior (bdt):
+  "Retrieve the prior for BDT classifiers"
+  if bdt.init_ == 'zero':
+    return np.zeros(bdt.n_classes_)
+  elif isinstance (bdt.init_, DummyClassifier):
+    X = np.empty([1, bdt.n_classes_])
+    return np.asarray(bdt.loss_.get_init_raw_predictions(X, bdt.init_)).ravel()
+  raise NotImplementedError (
+      "Cannot convert initializer %s" % str(bdt.init_)
+      )
+
+

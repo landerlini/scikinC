@@ -2,7 +2,7 @@ import sys
 from scikinC import BaseConverter
 import numpy as np
 
-from scikinC._tools import array2c
+from scikinC._tools import array2c, retrieve_prior
 
 class GBDTTraversalConverter (BaseConverter):
   """
@@ -124,9 +124,7 @@ class GBDTTraversalConverter (BaseConverter):
         "FLOAT_T *%s (%s, const %s)" % (name or "bdt", retvar, invar),
         "{",
         "  int i; ",
-        "  double acc[%d];" % n_classes, 
-        "  for (short i=0; i < %d; ++i) ret[i] = 0.f;" % n_classes,
-        "  for (short i=0; i < %d; ++i) acc[i] = 0.f;" % n_classes,
+        "  double acc[] = %s;" % array2c(retrieve_prior(bdt))
       ]
     for iTree, tree in enumerate(bdt.estimators_):
       lines.append("  update_%s_tree%03d (acc, inp); " % (name or bdt, iTree))
@@ -136,16 +134,16 @@ class GBDTTraversalConverter (BaseConverter):
     if n_classes > 1:
       lines += [
           "  short argmax = 0; ",
-          "  for (int i = 0; i < %d; ++i) if (acc[i] > acc[argmax]) argmax = i; " % n_classes,
+          "  for (i = 0; i < %d; ++i) if (acc[i] > acc[argmax]) argmax = i; " % n_classes,
           "  if (acc[argmax] > 1e10) { ",
-          "    for (int i = 0; i < %d; ++i) ret[i] = (i==argmax ? 1.: 0.); " % n_classes,
+          "    for (i = 0; i < %d; ++i) ret[i] = (i==argmax ? 1.: 0.); " % n_classes,
           "    return ret; ",
           "  }",
-          "  for (short i=0; i < %d; ++i) acc[i] = exp(acc[i]);" % n_classes,
-          "  for (short i=0; i < %d; ++i) acc[i] = (acc[i] > 1e300?1e300:acc[i]);" % n_classes,
+          "  for (i=0; i < %d; ++i) acc[i] = exp(acc[i]);" % n_classes,
+          "  for (i=0; i < %d; ++i) acc[i] = (acc[i] > 1e300?1e300:acc[i]);" % n_classes,
           "  long double sum = 0;",
-          "  for (short i=0; i < %d; ++i) sum += acc[i];" % n_classes,
-          "  for (short i=0; i < %d; ++i) acc[i] /= sum;" % n_classes,
+          "  for (i=0; i < %d; ++i) sum += acc[i];" % n_classes,
+          "  for (i=0; i < %d; ++i) acc[i] /= sum;" % n_classes,
         ]
     else:
       lines += [
@@ -155,7 +153,7 @@ class GBDTTraversalConverter (BaseConverter):
 
 
     lines += [
-        "  for (int i = 0; i < %d; ++i) ret[i] = acc[i];" % n_classes, 
+        "  for (i = 0; i < %d; ++i) ret[i] = acc[i];" % n_classes, 
         "  return ret;", "}"
         ]
 

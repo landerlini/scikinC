@@ -2,6 +2,7 @@ import sys
 from scikinC import BaseConverter
 import numpy as np
 
+from scikinC._tools import array2c, retrieve_prior
 
 
 class GBDTUnrollingConverter (BaseConverter):
@@ -65,8 +66,9 @@ class GBDTUnrollingConverter (BaseConverter):
         "extern \"C\"",
         "FLOAT_T *%s (%s, const %s)" % (name or "bdt", retvar, invar),
         "{",
+        "  const FLOAT_T init[] = %s;" % array2c(retrieve_prior(bdt)), 
         "  int i; ",
-        "  for (short i=0; i < %d; ++i) ret[i] = 0.f;" % n_classes,
+        "  for (i=0; i < %d; ++i) ret[i] = init[i];" % n_classes,
       ]
 
     for iTree, tree in enumerate(bdt.estimators_):
