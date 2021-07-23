@@ -66,3 +66,19 @@ def classifier_prelu():
 def test_prelu (classifier_prelu):
   deployed = deploy_keras("keras_prelu", classifier_prelu) 
   assert eval_error (classifier_prelu, deployed) < 1e-5
+
+################################################################################
+### LeakyReLU layer 
+@pytest.fixture
+def classifier_leakyrelu():
+  return make_classifier ([
+        tf.keras.layers.Dense(16, activation='linear'),
+        tf.keras.layers.LeakyReLU(0.1),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+        ])
+
+
+def test_leakyrelu (classifier_leakyrelu):
+  deployed = deploy_keras("keras_leakyrelu", classifier_leakyrelu) 
+  assert eval_error (classifier_leakyrelu, deployed) < 1e-5
+

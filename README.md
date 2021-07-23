@@ -169,6 +169,7 @@ A few notes:
   | ---------------------------- | --------------- | --------- | ----------------------------- |
   | `Dense`                      | Available       | Available |                               |
   | `PReLU`                      | Available       | Available |                               |
+  | `LeakyReLU`                  | Available       | Available |                               |
 
 #### Keras Activation functions
   | Model                        | Implementation  | Test      | Notes                         |
