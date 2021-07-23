@@ -90,6 +90,29 @@ Finally you can compile the C file for dynamic loading
 gcc -o deployed_scaler.so Cfile.C -shared -fPIC -Ofast
 ```
 
+## Python Interface
+Sometimes it may be useful to include the conversion in C
+directly in the Python script where the training procedure 
+is defined. This is made possible by importing the `scikinC`
+function and calling the convert method.
+For example,
+```python
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+import scikinC
+
+minmax = MinMaxScaler()
+minmax.fit ( np.random.normal(0,5, (2,1000) )
+
+c_string = scikinC.convert({
+  'myMinMaxScaler': minmax
+})
+```
+`c_string` contains the text that describe `MinMaxScaler`
+transform in C. It can be stored in a text file and compiled 
+with `gcc` and outlined above.
+
+
 ## Using the compiled models in C/C++ applications
 Considering the example producing the shared object 
 `deployed_object.so` above, one can easily evaluate 
