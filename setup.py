@@ -20,7 +20,7 @@ setup(
     description='A converter for scikit learn and keras to hardcoded C function',  
     long_description=long_description,  
     long_description_content_type='text/markdown',  # Optional (see note above)
-    url='https://github.com/landerli/scikinC',  # Optional
+    url='https://github.com/landerlini/scikinC',  # Optional
     author='Lucio Anderlini',  # Optional
     author_email='Lucio.Anderlini@fi.infn.it',  # Optional
     classifiers=[  # Optional
