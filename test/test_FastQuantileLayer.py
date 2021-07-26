@@ -19,7 +19,7 @@ def scaler_uniform():
 
 @pytest.fixture
 def scaler_bool():
-  scaler_ = FastQuantileLayer()
+  scaler_ = FastQuantileLayer(output_distribution='normal')
   X = np.random.choice ([0., 1.],(1000, 10), [0.8, 0.2])
   scaler_.fit (X) 
   return scaler_
@@ -27,7 +27,6 @@ def scaler_bool():
 @pytest.fixture
 def scaler_normal():
   scaler_ = FastQuantileLayer(output_distribution='normal')
-  X = np.ones((1000, 10))
   X = np.random.uniform (20,30,(1000, 10))
   scaler_.fit (X) 
   return scaler_
@@ -43,9 +42,7 @@ def test_forward (scaler, request):
   deployed = deploy_pickle("fastQL", scaler)
   xtest = np.random.uniform (20,30, 10)
   py = scaler.transform (xtest[None]).numpy()
-  print (py)
   c  = deployed.transform (10, xtest)
-  print (xtest, "->", c, " instead of: ", py)
   assert np.abs(py-c).max() < 1e-5
  
 
