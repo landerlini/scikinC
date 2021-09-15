@@ -15,6 +15,7 @@ __CONVERTERS = {
       'QuantileTransformer': 'QuantileTransformerConverter', 
       'DecorrTransformer': 'DecorrTransformerConverter', 
       'Pipeline': 'PipelineConverter', 
+      'FastQuantileLayer': 'FastQuantileLayerConverter',
 
       ## Keras 
       'Sequential': 'KerasSequentialConverter', 

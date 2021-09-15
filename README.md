@@ -202,6 +202,20 @@ A few notes:
   | `relu`                       | Available       | Available |                               |
 
 
+## Running tests
+In order to install the full dependencies needed to test the whole package, 
+install with the tag `fql`.
+```
+python3 setup.py bdist_wheel 
+pip install dist/scikinC*.whl[fql]
+```
+
+Then run the tests with
+```
+pytest test
+```
+
+
 ## Related projects
   * [LWTNN](https://github.com/lwtnn/lwtnn)
   * [SimpleNN](https://gitlab.cern.ch/mschille/simplenn)
