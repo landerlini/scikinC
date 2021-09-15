@@ -14,11 +14,11 @@ def classifier():
   classifier_ = GradientBoostingClassifier()
   X = np.concatenate (( 
       np.random.normal (0,2,(1000, 10)), 
-      np.random.normal (1,3,(1000, 10)), 
-      np.random.normal (2,4,(1000, 10)), 
+      np.random.normal (1,3,( 100, 10)), 
+      np.random.normal (2,4,(  10, 10)), 
       )) 
   y = np.array ( 
-      [0] * 1000 + [1] * 1000 + [2] * 1000 )
+      [0] * 1000 + [1] * 100 + [2] * 10 )
   classifier_.fit (X, y) 
   return classifier_
 
@@ -33,11 +33,11 @@ def deep_classifier():
   classifier_ = GradientBoostingClassifier(max_depth=8)
   X = np.concatenate (( 
       np.random.normal (0,2,(1000, 10)), 
-      np.random.normal (1,3,(1000, 10)), 
-      np.random.normal (2,4,(1000, 10)), 
+      np.random.normal (1,3,( 100, 10)), 
+      np.random.normal (2,4,(  10, 10)), 
       )) 
   y = np.array ( 
-      [0] * 1000 + [1] * 1000 + [2] * 1000 )
+      [0] * 1000 + [1] * 100 + [2] * 10 )
   classifier_.fit (X, y) 
   return classifier_
 

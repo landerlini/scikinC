@@ -38,7 +38,6 @@ class FastQuantileLayerConverter (BaseConverter):
 
       const FLOAT_T dx = (id < x_0f) ? 0. : (id > x_0f + 1) ? 1. : (id - x_0f);
 
-      fprintf (stderr, "%%f : %%f - %%f\\n", id, y_0, y_1);
       return y_0 + dx * (y_1 - y_0); 
     }
 
