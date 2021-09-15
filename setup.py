@@ -56,6 +56,7 @@ setup(
 
     extras_require={  # Optional
         'keras': ['tensorflow', 'keras'],
+        'fql': ['tensorflow', 'keras', 'fastquantilelayer'],
     },
 
     entry_points={  # Optional
