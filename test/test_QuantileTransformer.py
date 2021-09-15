@@ -18,7 +18,7 @@ def scaler_uniform():
 
 @pytest.fixture
 def scaler_normal():
-  scaler_ = QuantileTransformer(output_distribution='normal', n_quantiles=2)
+  scaler_ = QuantileTransformer(output_distribution='normal', n_quantiles=100)
   X = np.random.uniform (20,30,(1000, 10))
   scaler_.fit (X) 
   return scaler_
@@ -30,12 +30,29 @@ def scaler_bool_uniform():
   scaler_.fit (X) 
   return scaler_
 
+@pytest.fixture
+def scaler_bool_normal():
+  scaler_ = QuantileTransformer(output_distribution='normal')
+  X = np.random.choice ([22.,27.], (1000, 10), (0.8, 0.2))
+  scaler_.fit (X) 
+  return scaler_
+
+@pytest.fixture
+def scaler_delta_normal():
+  scaler_ = QuantileTransformer(output_distribution='normal')
+  X = np.full((10000,10), np.pi)
+  scaler_.fit (X) 
+  return scaler_
+
+
 
 
 scalers = [
     'scaler_uniform', 
     'scaler_normal',
     'scaler_bool_uniform',
+    'scaler_bool_normal',
+    'scaler_delta_normal',
     ]
 
 

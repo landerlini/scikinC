@@ -1,4 +1,5 @@
 import numpy as np 
+import sys
 from scikinC import BaseConverter 
 from scipy import stats
 from ._tools import array2c 
@@ -45,9 +46,15 @@ class QuantileTransformerConverter (BaseConverter):
     nFeatures   = model.quantiles_.shape[1] 
     y = np.linspace (1e-7, 1.-1e-7, nQuantiles) 
 
-    nSamples = 1024
-    yAxis = np.linspace (-4, 4, nSamples)
-    xAxis = stats.norm.cdf (yAxis)
+    nSamples = 512
+    xAxis = np.linspace (1e-7, 1.-1e-7, nSamples)
+    yAxis = stats.norm.ppf (xAxis)
+    yAxis [0] = stats.norm.ppf (1e-7 + np.spacing(1))
+    yAxis [-1] = stats.norm.ppf (1.-1e-7 + np.spacing(1))
+
+    #print (np.c_[y], file=sys.stderr)
+#    print (stats.norm.ppf(model.references_), file=sys.stderr)
+#    print (np.c_[xAxis, yAxis], file=sys.stderr)
 
     uniform_to_normal_string = """
       FLOAT_T u[] = %(xAxis)s;
