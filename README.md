@@ -175,6 +175,8 @@ A few notes:
   | `MinMaxScaler`         | Available       | Available |                               |
   | `StandardScaler`       | Available       | Available |                               |
   | `QuantileTransformer`  | Available       | Available |                               |
+  | `FunctionTransformer`  | Available       | Available | Only functions in math.h      |
+  | `ColumnTransformer`    | Available       | Available | Only integer column indices   |
   | `Pipeline`             | Available       | Partial   | Pipelines of pipelines break  |
 
 #### Scikit-Learn models
