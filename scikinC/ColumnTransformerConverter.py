@@ -17,11 +17,13 @@ class ColumnTransformerConverter (BaseConverter):
     keys = []
     transformers = []
     for key, transformer, columns in model.transformers_:
-      if transformer == 'drop': 
+      if transformer == 'drop' or len(columns) == 0: 
         continue 
 
-      if not all([isinstance(c, int) for c in columns]):
-        raise NotImplementedError ("Columns can only be indexed with integers")
+      if not all([isinstance(c, int) or int(c) == c for c in columns]):
+
+        raise NotImplementedError ("Columns can only be indexed with integers, got", 
+            [type(c) for c in columns])
 
       index_mapping += columns
 
@@ -31,7 +33,10 @@ class ColumnTransformerConverter (BaseConverter):
         key.append (str(1+len(keys)))
 
       if isinstance(transformer, (FunctionTransformer,)):
-        transformer.n_features_in_ = len(columns)
+        if transformer.func is None and transformer.inverse_func is None:
+          transformer = 'passthrough'
+        else:
+          transformer.n_features_in_ = len(columns)
 
       transformers.append (('colcnv_%s_%s' % (name, key), transformer, columns))
 
@@ -67,16 +72,13 @@ class ColumnTransformerConverter (BaseConverter):
           """%dict(output=index_mapping.index(column), column=column))
       else: 
         for iCol, column in enumerate(columns):
-          lines.append("""
-          bufin [%(iCol)d] = input[%(column)d];
-          """%dict(iCol=iCol, column=column))
-        lines.append ("""
-        %(name)s (bufout, bufin);
-        """ % dict(name=key))
+          lines.append("""         bufin [%(iCol)d] = input[%(column)d];"""%
+              dict(iCol=iCol, column=column))
+        lines.append ("""          %(name)s (bufout, bufin);""" 
+            % dict(name=key))
         for iCol, column in enumerate(columns):
-          lines.append("""
-          ret[%(index_out)d] = bufout[%(iCol)d];
-          """ % dict(index_out=index_mapping.index(column), iCol=iCol))
+          lines.append("""         ret[%(index_out)d] = bufout[%(iCol)d];"""% 
+              dict(index_out=index_mapping.index(column), iCol=iCol))
 
     lines.append ("""
       return ret;
@@ -120,16 +122,13 @@ class ColumnTransformerConverter (BaseConverter):
           """%dict(output=index_mapping.index(column), column=column))
       else: 
         for iCol, column in enumerate(columns):
-          lines.append("""
-          bufin [%(iCol)d] = input[%(column)d];
-          """%dict(iCol=iCol, column=column))
-        lines.append ("""
-        %(name)s_inverse (bufout, bufin);
-        """ % dict(name=key))
+          lines.append("""          bufin [%(iCol)d] = input[%(column)d];"""%
+              dict(iCol=iCol, column=column))
+        lines.append  ("""          %(name)s_inverse (bufout, bufin);"""%
+            dict(name=key))
         for iCol, column in enumerate(columns):
-          lines.append("""
-          ret[%(index_out)d] = bufout[%(iCol)d];
-          """ % dict(index_out=index_mapping.index(column), iCol=iCol))
+          lines.append("""          ret[%(index_out)d] = bufout[%(iCol)d]; """ %
+              dict(index_out=index_mapping.index(column), iCol=iCol))
 
     lines.append ("""
       return ret;
