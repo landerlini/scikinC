@@ -2,44 +2,19 @@ import numpy as np
 import sys
 from scikinC import BaseConverter 
 from scipy import stats
-from ._tools import array2c 
+from ._tools import array2c, get_interpolation_function
 
 class QuantileTransformerConverter (BaseConverter):
-  def convert (self, model, name = None): 
+  def convert (self, model, name=None): 
     lines = self.header() 
 
     distr = model.output_distribution
     if distr not in ['normal', 'uniform']:
       raise NotImplementedError ("Unexpected distribution %s" % distr)
 
-    lines . append ( """
-    extern "C"
-    FLOAT_T qtc_interpolate_for_%(name)s ( FLOAT_T x, FLOAT_T *xs, FLOAT_T *ys, int N )
-    {
-      int min = 0;
-      int max = N; 
-      int n;  
-
-      if (N<=1) return ys[0]; 
-
-      if (x <= xs[0]) return ys[0]; 
-      if (x >= xs[N-1]) return ys[N-1]; 
-
-
-      for (;;) 
-      {
-        n = (min + max)/2; 
-        if ( x < xs[n] ) 
-          max = n; 
-        else if ( x >= xs[n+1] )
-          min = n; 
-        else
-          break; 
-      } 
-
-      return (x - xs[n])/(xs[n+1]-xs[n])*(ys[n+1]-ys[n]) + ys[n]; 
-    }
-    """ % dict(name = name)); 
+    lines.append (
+        get_interpolation_function('qtc_interpolate_for_%s'%(name))
+        )
 
     q = model.quantiles_ 
     nQuantiles = model.quantiles_.shape[0] 

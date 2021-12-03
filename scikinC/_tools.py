@@ -53,3 +53,34 @@ def retrieve_prior (bdt):
       )
 
 
+################################################################################
+def get_interpolation_function (func_name):
+  return """
+    extern "C"
+    FLOAT_T %(func_name)s ( FLOAT_T x, FLOAT_T *xs, FLOAT_T *ys, int N )
+    {
+      int min = 0;
+      int max = N; 
+      int n;  
+
+      if (N<=1) return ys[0]; 
+
+      if (x <= xs[0]) return ys[0]; 
+      if (x >= xs[N-1]) return ys[N-1]; 
+
+
+      for (;;) 
+      {
+        n = (min + max)/2; 
+        if ( x < xs[n] ) 
+          max = n; 
+        else if ( x >= xs[n+1] )
+          min = n; 
+        else
+          break; 
+      } 
+
+      return (x - xs[n])/(xs[n+1]-xs[n])*(ys[n+1]-ys[n]) + ys[n]; 
+    }
+    """ % dict(func_name=func_name); 
+
