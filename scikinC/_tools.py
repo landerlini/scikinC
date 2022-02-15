@@ -36,6 +36,8 @@ def get_n_features (algo):
     return algo.quantiles_.shape[-1] 
   elif algo.__class__.__name__ == 'Pipeline':
     return get_n_features (algo.steps[-1]) 
+  elif algo.__class__.__name__ == 'ColumnTransformer':
+    return 1+max([max(c) for _, _, c in algo.transformers_])
 
   raise TypeError ("Cannot determine output features for %s" % type(algo))
 
