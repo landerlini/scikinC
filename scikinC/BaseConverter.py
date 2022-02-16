@@ -4,13 +4,19 @@ class BaseConverter:
   """
   BaseConverter providing header and float datatype to all converters
   """
+  INVERTIBLE = False
+
   def __init__(self, 
       float_t='float', 
-      copyright=os.environ["USER"], 
+      copyright=None
       ):
 
     self.float_t = float_t
-    self.copyright = copyright
+    try: 
+      self.copyright = copyright or os.environ["USER"] 
+    except KeyError:
+      self.copyright = "scikinC"
+
 
   def header(self):
     "Return the header for the generated C file"
@@ -33,3 +39,9 @@ class BaseConverter:
       floatt = self.float_t, 
       ),
     ]
+
+
+class InvertibleConverter (BaseConverter):
+  INVERTIBLE = True
+
+

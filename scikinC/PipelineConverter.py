@@ -1,12 +1,12 @@
 import numpy as np
-from scikinC import BaseConverter
+from scikinC import InvertibleConverter
 from scipy import stats
-from ._tools import get_n_features 
+from ._tools import get_n_features, is_invertible
 
 from scikinC import convert 
 
 
-class PipelineConverter (BaseConverter):
+class PipelineConverter (InvertibleConverter):
   def convert(self, model, name=None):
     lines = [] 
 
@@ -53,36 +53,37 @@ class PipelineConverter (BaseConverter):
     """)
 
 
-    lines.append("""
-    extern "C"
-    FLOAT_T *%(name)s_inverse (FLOAT_T* ret, const FLOAT_T *x)
-    {
-    """ % (dict(name=name)))
+    if all([is_invertible(alg) for _, alg in model.steps]):
+      lines.append("""
+      extern "C"
+      FLOAT_T *%(name)s_inverse (FLOAT_T* ret, const FLOAT_T *x)
+      {
+      """ % (dict(name=name)))
 
-    input_name = 'x' 
-    for sname, step in model.steps[::-1][:-1]:
+      input_name = 'x' 
+      for sname, step in model.steps[::-1][:-1]:
+        lines.append ( """
+        FLOAT_T out_%(name)s[%(nFeatures)d];
+        %(name)s_inverse ( out_%(name)s, %(input_name)s  );
+        """ % dict (
+          name = prefixed(sname),
+          nFeatures = get_n_features ( step ), 
+          input_name = input_name ,
+          ))
+        input_name = "out_%s" % prefixed(sname) 
+
+      sname, step = model.steps[0] 
       lines.append ( """
-      FLOAT_T out_%(name)s[%(nFeatures)d];
-      %(name)s_inverse ( out_%(name)s, %(input_name)s  );
+        %(name)s_inverse ( ret, %(input_name)s  );
       """ % dict (
         name = prefixed(sname),
-        nFeatures = get_n_features ( step ), 
         input_name = input_name ,
         ))
-      input_name = "out_%s" % prefixed(sname) 
+        
 
-    sname, step = model.steps[0] 
-    lines.append ( """
-      %(name)s_inverse ( ret, %(input_name)s  );
-    """ % dict (
-      name = prefixed(sname),
-      input_name = input_name ,
-      ))
-      
-
-    lines.append("""
-      return ret;
-    }
-    """)
+      lines.append("""
+        return ret;
+      }
+      """)
 
     return "\n".join(lines) 

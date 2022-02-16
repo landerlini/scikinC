@@ -1,9 +1,9 @@
 import numpy as np 
-from scikinC import BaseConverter 
+from scikinC import InvertibleConverter 
 from scipy import stats
 from ._tools import array2c 
 
-class DecorrTransformerConverter (BaseConverter):
+class DecorrTransformerConverter (InvertibleConverter):
   """
   Converter for a decorrelation step not defined in scikit-learn.
   This is only present for compatibility with existing applications 
