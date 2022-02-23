@@ -16,7 +16,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='scikinC',  # Required
-    version='0.2.0',  # Required
+    version='0.2.3',  # Required
     description='A converter for scikit learn and keras to hardcoded C function',  
     long_description=long_description,  
     long_description_content_type='text/markdown',  # Optional (see note above)
