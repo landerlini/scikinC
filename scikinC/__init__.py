@@ -2,8 +2,9 @@
 Set of tools to convert scikit learn and tensorflow into plain C functions
 """
 
-from scikinC.BaseConverter import BaseConverter 
+from scikinC.BaseConverter import BaseConverter, InvertibleConverter
 from scikinC               import ModelLoader 
+from copy                  import copy
 
 version = '0.1'
 
@@ -22,6 +23,12 @@ __CONVERTERS = {
       ## Keras 
       'Sequential': 'KerasSequentialConverter', 
     }
+
+def get_converters ():
+  """Return the dictionary of converters"""
+  global __CONVERTERS
+  return copy(__CONVERTERS)
+
 
 def convert ( some_object, *args, **kwargs ):
 

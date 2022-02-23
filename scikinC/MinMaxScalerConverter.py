@@ -1,7 +1,7 @@
-from scikinC import BaseConverter 
+from scikinC import InvertibleConverter 
 from ._tools import array2c 
 
-class MinMaxScalerConverter (BaseConverter):
+class MinMaxScalerConverter (InvertibleConverter):
 
   def convert (self, model, name = None): 
     lines = self.header() 

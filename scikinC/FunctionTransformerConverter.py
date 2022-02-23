@@ -1,10 +1,10 @@
 import numpy as np
 
-from scikinC import BaseConverter
+from scikinC import InvertibleConverter
 from ._tools import array2c
 
 
-class FunctionTransformerConverter (BaseConverter):
+class FunctionTransformerConverter (InvertibleConverter):
   def convert(self, model, name=None):
     lines = self.header()
 

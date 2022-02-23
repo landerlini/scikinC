@@ -3,13 +3,13 @@ import numpy as np
 from sklearn.preprocessing import FunctionTransformer
 
 import scikinC
-from scikinC import BaseConverter
+from scikinC import InvertibleConverter
 from ._tools import array2c
 
 import sys
 
 
-class ColumnTransformerConverter (BaseConverter):
+class ColumnTransformerConverter (InvertibleConverter):
   def convert(self, model, name=None):
     lines = self.header()
 

@@ -1,5 +1,6 @@
 import numpy as np 
 from sklearn.dummy import DummyClassifier
+from scikinC import get_converters, InvertibleConverter
 
 ################################################################################
 def array2c (array, fmt = None):
@@ -86,3 +87,13 @@ def get_interpolation_function (func_name):
     }
     """ % dict(func_name=func_name); 
 
+################################################################################
+def is_invertible (model):
+  import sys 
+  converters = get_converters()
+  converter = converters[model.__class__.__name__]
+  module = __import__ ( "scikinC.%s" % converter, fromlist = [converter])
+  ret = getattr(module, converter).INVERTIBLE
+  print (f"Is {model.__class__.__name__} invertible? {ret}", file=sys.stderr)
+  print (module, file=sys.stderr)
+  return ret 
