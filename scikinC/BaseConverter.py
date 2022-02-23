@@ -10,6 +10,10 @@ class BaseConverter:
       float_t='float', 
       copyright=None
       ):
+    if copyright is None:
+      copyright = os.environ["USER"] if "USER" in os.environ.keys() else 'scikinC'
+
+
 
     self.float_t = float_t
     try: 
