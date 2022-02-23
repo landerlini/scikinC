@@ -1,66 +1,65 @@
-import numpy as np 
+import numpy as np
 import sys
-from scikinC import BaseConverter 
+from scikinC import BaseConverter
 from scipy import stats
 from ._tools import array2c, get_interpolation_function
 
-class QuantileTransformerConverter (BaseConverter):
-  def convert (self, model, name=None): 
-    lines = self.header() 
 
-    distr = model.output_distribution
-    if distr not in ['normal', 'uniform']:
-      raise NotImplementedError ("Unexpected distribution %s" % distr)
+class QuantileTransformerConverter(BaseConverter):
+    def convert(self, model, name=None):
+        lines = self.header()
 
-    lines.append (
-        get_interpolation_function('qtc_interpolate_for_%s'%(name))
+        distr = model.output_distribution
+        if distr not in ['normal', 'uniform']:
+            raise NotImplementedError("Unexpected distribution %s" % distr)
+
+        lines.append(
+            get_interpolation_function('qtc_interpolate_for_%s' % name)
         )
 
-    q = model.quantiles_ 
-    nQuantiles = model.quantiles_.shape[0] 
-    nFeatures   = model.quantiles_.shape[1] 
-    y = np.linspace (1e-7, 1.-1e-7, nQuantiles) 
+        q = model.quantiles_
+        nQuantiles = model.quantiles_.shape[0]
+        nFeatures = model.quantiles_.shape[1]
+        y = np.linspace(1e-7, 1. - 1e-7, nQuantiles)
 
-    nSamples = 512
-    xAxis = np.linspace (1e-7, 1.-1e-7, nSamples)
-    yAxis = stats.norm.ppf (xAxis)
-    yAxis [0] = stats.norm.ppf (1e-7 + np.spacing(1))
-    yAxis [-1] = stats.norm.ppf (1.-1e-7 + np.spacing(1))
+        nSamples = 0x1000
 
-    #print (np.c_[y], file=sys.stderr)
-#    print (stats.norm.ppf(model.references_), file=sys.stderr)
-#    print (np.c_[xAxis, yAxis], file=sys.stderr)
+        xAxis = np.linspace(
+            stats.norm.ppf(1e-7 + np.spacing(1)),
+            stats.norm.ppf(1. - 1e-7 + np.spacing(1)),
+            nSamples
+        )
+        yAxis = stats.norm.cdf(xAxis)
 
-    uniform_to_normal_string = """
+        uniform_to_normal_string = """
       FLOAT_T u[] = %(xAxis)s;
       FLOAT_T norm[] = %(yAxis)s;
 
       for (c = 0; c < %(nFeatures)d; ++c)
-        ret[c] = qtc_interpolate_for_%(name)s (ret[c], u, norm, %(n)d); 
-    """ % dict (
-          name = name, 
-          xAxis = array2c (xAxis), 
-          yAxis = array2c (yAxis), 
-          nFeatures = nFeatures,
-          n = nSamples,
+        ret[c] = qtc_interpolate_for_%(name)s (ret[c], norm, u, %(n)d); 
+    """ % dict(
+            name=name,
+            xAxis=array2c(xAxis),
+            yAxis=array2c(yAxis),
+            nFeatures=nFeatures,
+            n=nSamples,
         )
 
-    normal_to_uniform_string = """
+        normal_to_uniform_string = """
       FLOAT_T u[] = %(xAxis)s;
       FLOAT_T norm[] = %(yAxis)s;
 
       for (c = 0; c < %(nFeatures)d; ++c)
-        x[c] = qtc_interpolate_for_%(name)s (x[c], norm, u, %(n)d); 
-    """ % dict (
-          name = name, 
-          xAxis = array2c (xAxis), 
-          yAxis = array2c (yAxis), 
-          nFeatures = nFeatures,
-          n = nSamples,
+        x[c] = qtc_interpolate_for_%(name)s (x[c], u, norm, %(n)d); 
+    """ % dict(
+            name=name,
+            xAxis=array2c(xAxis),
+            yAxis=array2c(yAxis),
+            nFeatures=nFeatures,
+            n=nSamples,
         )
 
-
-    lines.append ("""
+        lines.append("""
     extern "C"
     FLOAT_T *%(name)s (FLOAT_T *ret, const FLOAT_T *x)
     {
@@ -75,17 +74,16 @@ class QuantileTransformerConverter (BaseConverter):
 
       return ret; 
     }
-    """ % dict (
-      name = name, 
-      nQuantiles = nQuantiles, 
-      nFeatures  = nFeatures,
-      qString = array2c ( q.T ), #", ".join ([
-        #"{%s}"%(", ".join ([str(x) for x in ql])) for ql in q.T]) ,
-      yString = array2c ( y ), #", ".join ([str(x) for x in y]) 
-      to_normal_string = uniform_to_normal_string if distr=='normal' else '',
-      )); 
+    """ % dict(
+            name=name,
+            nQuantiles=nQuantiles,
+            nFeatures=nFeatures,
+            qString=array2c(q.T),
+            yString=array2c(y),
+            to_normal_string=uniform_to_normal_string if distr == 'normal' else '',
+        ))
 
-    lines.append ("""
+        lines.append("""
     extern "C"
     FLOAT_T *%(name)s_inverse (FLOAT_T *ret, const FLOAT_T *input)
     {
@@ -105,19 +103,14 @@ class QuantileTransformerConverter (BaseConverter):
 
       return ret; 
     }
-    """ % dict (
-      name = name, 
-      nQuantiles = nQuantiles, 
-      nFeatures  = nFeatures,
-      qString = array2c (q.T), #", ".join ([
-        #"{%s}"%(", ".join ([str(x) for x in ql])) for ql in q.T]) ,
-      yString = array2c (y), #", ".join ([str(x) for x in y]) 
-      to_uniform_string = normal_to_uniform_string if distr=='normal' else '',
-      )); 
+    """ % dict(
+            name=name,
+            nQuantiles=nQuantiles,
+            nFeatures=nFeatures,
+            qString=array2c(q.T),  # ", ".join ([
+            # "{%s}"%(", ".join ([str(x) for x in ql])) for ql in q.T]) ,
+            yString=array2c(y),  # ", ".join ([str(x) for x in y])
+            to_uniform_string=normal_to_uniform_string if distr == 'normal' else '',
+        ))
 
-    return "\n".join (lines) 
-
-
-
-
-
+        return "\n".join(lines)
