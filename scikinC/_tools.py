@@ -65,7 +65,7 @@ def get_interpolation_function (func_name):
       int min = 0;
       int max = N; 
       int n;  
-
+      
       if (N<=1) return ys[0]; 
 
       if (x <= xs[0]) return ys[0]; 

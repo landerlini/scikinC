@@ -1,6 +1,6 @@
 from scikinC import BaseConverter 
 from scikinC import layers 
-from ._tools import array2c 
+
 
 class KerasSequentialConverter (BaseConverter):
   """
