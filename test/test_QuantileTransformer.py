@@ -96,7 +96,7 @@ def test_forward (scaler, request):
   results = []
   try:
     for iAttempt in range(100):
-      xtest = np.random.uniform (21,29, n_features)
+      xtest = np.random.uniform (-1000,-990, n_features)
       py = scaler.transform (xtest[None])
       c  = deployed.transform (n_features, xtest)
       results.append ([py[0].flatten(), c.flatten(), np.abs(py[0]-c).flatten() > 1e-5 ])
@@ -114,6 +114,6 @@ def test_inverse (scaler, request):
     py = scaler.inverse_transform (xtest[None])
     c  = deployed.transform_inverse (20, xtest)
     assert np.abs(py-c).max() < 1e-4
- 
+
 
 
