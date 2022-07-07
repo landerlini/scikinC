@@ -25,12 +25,12 @@ class GBDTUnrollingConverter (BaseConverter):
 
   @ staticmethod
   def _get_limits(bdt):
-    mins=[None] * bdt.n_features_
-    maxs=[None] * bdt.n_features_
+    mins=[None] * bdt.n_features_in_
+    maxs=[None] * bdt.n_features_in_
 
     for treeset in bdt.estimators_:
       for tree in treeset:
-        for feature in range(bdt.n_features_):
+        for feature in range(bdt.n_features_in_):
           features=tree.tree_.feature
           if feature not in features: continue
           min_=np.min(tree.tree_.threshold[features == feature])
@@ -57,7 +57,7 @@ class GBDTUnrollingConverter (BaseConverter):
 
     min_, max_=self._get_limits(bdt)
 
-    nX = bdt.n_features_ 
+    nX = bdt.n_features_in_ 
 
     retvar="FLOAT_T ret[%d]" % n_classes
     invar="FLOAT_T inp[%d]" % nX

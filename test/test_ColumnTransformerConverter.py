@@ -32,7 +32,7 @@ def double_passthrough_transformer():
 @pytest.fixture
 def ss_and_passthrough_transformer():
   transformer_ = ColumnTransformer([
-    ('ss', StandardScaler(), [1,2]),
+    ('ss', StandardScaler(), [1,2,3]),
     ], remainder='passthrough')
   X = np.random.uniform (20,30,(1000, 10))
   transformer_.fit (X) 
@@ -52,8 +52,8 @@ def qt_and_passthrough_transformer():
 @pytest.fixture
 def double_qt_and_passthrough_transformer():
   transformer_ = ColumnTransformer([
-    ('qt1', QuantileTransformer(n_quantiles=100, output_distribution='normal'), [0,1,2]),
-    ('qt2', QuantileTransformer(n_quantiles=500, output_distribution='normal'), [4,5,6]),
+    ('qt1', QuantileTransformer(n_quantiles=100, output_distribution='normal'), [3,4]),
+    ('qt2', QuantileTransformer(n_quantiles=500, output_distribution='normal'), [1,2]),
     ], remainder='passthrough')
   X = np.random.uniform (20,30,(1000, 10))
   transformer_.fit (X) 
