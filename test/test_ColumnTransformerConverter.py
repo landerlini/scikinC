@@ -1,5 +1,5 @@
 import numpy as np 
-from sklearn.preprocessing import FunctionTransformer, QuantileTransformer
+from sklearn.preprocessing import FunctionTransformer, QuantileTransformer, StandardScaler
 from sklearn.compose import ColumnTransformer
 
 # PyTest testing infrastructure
@@ -30,6 +30,16 @@ def double_passthrough_transformer():
 
 
 @pytest.fixture
+def ss_and_passthrough_transformer():
+  transformer_ = ColumnTransformer([
+    ('ss', StandardScaler(), [1,2]),
+    ], remainder='passthrough')
+  X = np.random.uniform (20,30,(1000, 10))
+  transformer_.fit (X) 
+  return transformer_
+
+
+@pytest.fixture
 def qt_and_passthrough_transformer():
   transformer_ = ColumnTransformer([
     ('qt', QuantileTransformer(output_distribution='normal'), [0,2]),
@@ -42,8 +52,19 @@ def qt_and_passthrough_transformer():
 @pytest.fixture
 def double_qt_and_passthrough_transformer():
   transformer_ = ColumnTransformer([
-    ('qt1', QuantileTransformer(n_quantiles=100, output_distribution='normal'), [0,2,4]),
-    ('qt2', QuantileTransformer(n_quantiles=500, output_distribution='normal'), [1,3,5]),
+    ('qt1', QuantileTransformer(n_quantiles=100, output_distribution='normal'), [0,1,2]),
+    ('qt2', QuantileTransformer(n_quantiles=500, output_distribution='normal'), [4,5,6]),
+    ], remainder='passthrough')
+  X = np.random.uniform (20,30,(1000, 10))
+  transformer_.fit (X) 
+  return transformer_
+
+
+@pytest.fixture
+def qt_and_ss_and_passthrough_transformer():
+  transformer_ = ColumnTransformer([
+    ('qt', QuantileTransformer(output_distribution='normal'), [0,1]),
+    ('ss', StandardScaler(), [3,4]),
     ], remainder='passthrough')
   X = np.random.uniform (20,30,(1000, 10))
   transformer_.fit (X) 
@@ -55,6 +76,17 @@ def qt_and_ft_transformer_only():
   transformer_ = ColumnTransformer([
     ('qt', QuantileTransformer(output_distribution='normal'), [0,1,2,3,4]),
     ('ft', FunctionTransformer(), [5,6,7,8,9]),
+    ])
+  X = np.random.uniform (20,30,(1000, 10))
+  transformer_.fit (X) 
+  return transformer_
+
+
+@pytest.fixture
+def double_qt_transformer_only():
+  transformer_ = ColumnTransformer([
+    ('qt1', QuantileTransformer(n_quantiles=100, output_distribution='normal'), [5,6,7,8,9]),
+    ('qt2', QuantileTransformer(n_quantiles=500, output_distribution='normal'), [0,1,2,3,4]),
     ])
   X = np.random.uniform (20,30,(1000, 10))
   transformer_.fit (X) 
@@ -75,17 +107,23 @@ def qt_and_ft_transformer_dropping():
 transformers = [
     'passthrough_transformer',
     'double_passthrough_transformer',
+    'ss_and_passthrough_transformer',
     'qt_and_passthrough_transformer',
     'double_qt_and_passthrough_transformer',
+    'qt_and_ss_and_passthrough_transformer',
     'qt_and_ft_transformer_only',
+    'double_qt_transformer_only',
     'qt_and_ft_transformer_dropping',
     ]
 
 invertible_transformers = [
     'passthrough_transformer',
+    'ss_and_passthrough_transformer',
     'qt_and_passthrough_transformer',
     'double_qt_and_passthrough_transformer',
+    'qt_and_ss_and_passthrough_transformer',
     'qt_and_ft_transformer_only',
+    'double_qt_transformer_only'
     ]
 
 
