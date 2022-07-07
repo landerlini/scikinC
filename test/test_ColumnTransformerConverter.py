@@ -21,17 +21,29 @@ def passthrough_transformer():
 @pytest.fixture
 def double_passthrough_transformer():
   transformer_ = ColumnTransformer([
-    ('keep1', 'passthrough', [0,1]),
-    ('keep2', 'passthrough', [3,4]),
+    ('keep1', 'passthrough', [0,2]),
+    ('keep2', 'passthrough', [3,5]),
     ])
   X = np.random.uniform (20,30,(1000, 10))
   transformer_.fit (X) 
   return transformer_
 
+
 @pytest.fixture
 def qt_and_passthrough_transformer():
   transformer_ = ColumnTransformer([
-    ('qt', QuantileTransformer(output_distribution='normal'), [0,1]),
+    ('qt', QuantileTransformer(output_distribution='normal'), [0,2]),
+    ], remainder='passthrough')
+  X = np.random.uniform (20,30,(1000, 10))
+  transformer_.fit (X) 
+  return transformer_
+
+
+@pytest.fixture
+def double_qt_and_passthrough_transformer():
+  transformer_ = ColumnTransformer([
+    ('qt1', QuantileTransformer(n_quantiles=100, output_distribution='normal'), [0,2,4]),
+    ('qt2', QuantileTransformer(n_quantiles=500, output_distribution='normal'), [1,3,5]),
     ], remainder='passthrough')
   X = np.random.uniform (20,30,(1000, 10))
   transformer_.fit (X) 
@@ -52,19 +64,19 @@ def qt_and_ft_transformer_only():
 @pytest.fixture
 def qt_and_ft_transformer_dropping():
   transformer_ = ColumnTransformer([
-    ('qt', QuantileTransformer(output_distribution='normal'), [0,1]),
-    ('ft', FunctionTransformer(), [3,4]),
+    ('qt', QuantileTransformer(output_distribution='normal'), [0,2]),
+    ('ft', FunctionTransformer(), [3,5]),
     ], remainder='drop')
   X = np.random.uniform (20,30,(1000, 10))
   transformer_.fit (X) 
   return transformer_
 
 
-
 transformers = [
     'passthrough_transformer',
     'double_passthrough_transformer',
     'qt_and_passthrough_transformer',
+    'double_qt_and_passthrough_transformer',
     'qt_and_ft_transformer_only',
     'qt_and_ft_transformer_dropping',
     ]
@@ -72,6 +84,7 @@ transformers = [
 invertible_transformers = [
     'passthrough_transformer',
     'qt_and_passthrough_transformer',
+    'double_qt_and_passthrough_transformer',
     'qt_and_ft_transformer_only',
     ]
 
@@ -110,7 +123,3 @@ def test_inverse (scaler, request):
   print (np.c_ [xtest, c, py])
   assert np.abs(py-c).max() < 1e-4
  
-
-
-
-
