@@ -1,4 +1,15 @@
 # scikinC
+
+[![](https://img.shields.io/pypi/pyversions/scikinC)](https://pypi.python.org/pypi/scikinC/)
+[![](https://img.shields.io/pypi/v/scikinC)](https://pypi.python.org/pypi/scikinC/)
+[![](https://img.shields.io/pypi/status/scikinC)](https://pypi.python.org/pypi/scikinC/)
+[![](https://img.shields.io/pypi/dm/scikinC)](https://pypi.python.org/pypi/scikinC/)
+
+[![](https://img.shields.io/github/issues/landerlini/scikinC)](https://github.com/landerlini/scikinC/issues)
+[![](https://img.shields.io/github/issues-pr/landerlini/scikinC)](https://github.com/landerlini/scikinC/pulls)
+[![](https://badgen.net/github/forks/landerlini/scikinC)](https://github.com/landerlini/scikinC/network/members)
+[![](https://img.shields.io/github/stars/landerlini/scikinC)](https://github.com/landerlini/scikinC/stargazers/)
+
 `scikinC` is a simple tool intended for deployment of simple Machine Learning 
 algorithms as shared objects. 
 We consider as a target scikit-learn and keras neural networks. 
