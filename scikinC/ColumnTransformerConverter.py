@@ -48,8 +48,6 @@ class ColumnTransformerConverter (InvertibleConverter):
     
     mapping = {k: c for k,_,c in transformers}
 
-    print (model, file=sys.stderr)
-    print (index_mapping, file=sys.stderr)
     nFeatures = 1+max(index_mapping)
 
     lines.append("""
@@ -72,18 +70,15 @@ class ColumnTransformerConverter (InvertibleConverter):
           lines.append("""
           ret [%(output)d] = input[%(column)d];
           """%dict(output=index_mapping.index(column), column=column))
-          print (f"F ORIG[{column}] -> TRANSF[{index_mapping.index(column)}]", file=sys.stderr)
-      else: 
+      else:
         for iCol, column in enumerate(columns):
           lines.append("""         bufin [%(iCol)d] = input[%(column)d];"""%
               dict(iCol=iCol, column=column))
-          print(f"F ORIG[{column}] -> BUFFER[{iCol}]", file=sys.stderr)
         lines.append ("""          %(name)s (bufout, bufin);"""
             % dict(name=key))
         for iCol, column in enumerate(columns):
           lines.append("""         ret[%(index_out)d] = bufout[%(iCol)d];"""% 
               dict(index_out=index_mapping.index(column), iCol=iCol))
-          print(f"F BUFFER[{iCol}] -> OUTPUT[{index_mapping.index(column)}]", file=sys.stderr)
 
     lines.append ("""
       return ret;
@@ -123,18 +118,15 @@ class ColumnTransformerConverter (InvertibleConverter):
           lines.append("""
           ret [%(output)d] = input[%(column)d];
           """%dict(output=column, column=index_mapping.index(column)))
-          print (f"B OUTPUT[{index_mapping.index(column)}] -> INV_TRANSF[{column}]", file=sys.stderr)
       else:
         for iCol, column in enumerate(columns):
           lines.append("""          bufin [%(iCol)d] = input[%(column)d];"""%
               dict(iCol=iCol, column=index_mapping.index(column)))
-          print(f"B OUTPUT[{index_mapping.index(column)}] -> BUFFER[{iCol}]", file=sys.stderr)
         lines.append  ("""          %(name)s_inverse (bufout, bufin);"""%
             dict(name=key))
         for iCol, column in enumerate(columns):
           lines.append("""          ret[%(index_out)d] = bufout[%(iCol)d]; """ %
               dict(index_out=column, iCol=iCol))
-          print(f"B BUFFER[{iCol}] -> INV_TRANSF[{column}]", file=sys.stderr)
 
     lines.append ("""
       return ret;
