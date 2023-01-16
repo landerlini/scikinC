@@ -55,7 +55,7 @@ class MLFunction:
         if not isinstance(data_in, (np.ndarray, list)):
             raise TypeError
 
-        data_in_f = np.a0sarray(data_in).astype(self.float_type)
+        data_in_f = np.asarray(data_in).astype(self.float_type)
 
         if len(data_in_f.shape) == 1:
             data_in_f = np.array([data_in_f])
@@ -67,7 +67,7 @@ class MLFunction:
             self._f(obuf, data_row)
             output_rows.append(obuf.copy())
 
-        if len(data_in.shape) == 1:
+        if isinstance(data_in, np.ndarray) and len(data_in.shape) == 1:
             return output_rows[0]
 
         return np.stack(output_rows)
