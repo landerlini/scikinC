@@ -1,11 +1,11 @@
 import numpy as np
 import sys
-from scikinC import BaseConverter
+from scikinC import InvertibleConverter
 from scipy import stats
 from ._tools import array2c, get_interpolation_function
 
 
-class QuantileTransformerConverter(BaseConverter):
+class QuantileTransformerConverter(InvertibleConverter):
     def convert(self, model, name=None):
         lines = self.header()
 
