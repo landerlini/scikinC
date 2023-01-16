@@ -1,11 +1,11 @@
 import numpy as np 
-from scikinC import BaseConverter 
+from scikinC import InvertibleConverter
 from scipy import stats
 from ._tools import array2c 
 
 
 
-class FastQuantileLayerConverter (BaseConverter):
+class FastQuantileLayerConverter (InvertibleConverter):
   def convert (self, model, name = None): 
     lines = self.header() 
 
