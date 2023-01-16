@@ -67,6 +67,23 @@ def test_prelu (classifier_prelu):
   deployed = deploy_keras("keras_prelu", classifier_prelu) 
   assert eval_error (classifier_prelu, deployed) < 1e-5
 
+
+################################################################################
+### Softmax layer
+@pytest.fixture
+def classifier_softmax():
+    return make_classifier([
+        tf.keras.layers.Dense(16, activation='linear'),
+        tf.keras.layers.Softmax(),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+
+
+def test_softmax(classifier_softmax):
+    deployed = deploy_keras("keras_softmax", classifier_softmax)
+    assert eval_error(classifier_softmax, deployed) < 1e-5
+
+
 ################################################################################
 ### LeakyReLU layer 
 @pytest.fixture
