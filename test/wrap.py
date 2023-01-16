@@ -23,7 +23,7 @@ class DeployedModel:
 
     def compile (self):
       output = subprocess.check_output(
-          ["gcc", "-o", self.compiled, "--shared", "-lm", "-fPIC", self.filename]
+          ["gcc", self.filename, "-o", self.compiled, "--shared", "-fPIC", "-lm"]
           )
       if str(output, 'ASCII') not in ["", "\n"]:
         raise Exception("Compilation error %s" % str(output, 'ASCII'))
