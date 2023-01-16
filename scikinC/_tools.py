@@ -94,6 +94,4 @@ def is_invertible (model):
   converter = converters[model.__class__.__name__]
   module = __import__ ( "scikinC.%s" % converter, fromlist = [converter])
   ret = getattr(module, converter).INVERTIBLE
-  print (f"Is {model.__class__.__name__} invertible? {ret}", file=sys.stderr)
-  print (module, file=sys.stderr)
-  return ret 
+  return ret
