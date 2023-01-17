@@ -17,13 +17,14 @@ class Softmax (BaseLayerConverter):
         FLOAT_T* %(layername)s (FLOAT_T* ret, const FLOAT_T* input)
         {
             int i; 
-            FLOAT_T denom = 0;
+
+            double denom = 0;
             
             for (i=0; i < %(nX)d; ++i)
-                denom += exp(input[i]);
+                denom += exp((double)input[i]);
             
             for (i=0; i < %(nX)d; ++i)
-                ret[i] = exp(input[i])/denom;
+                ret[i] = (FLOAT_T) exp((double)input[i] - log(denom));
 
             return ret; 
         }
