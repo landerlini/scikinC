@@ -236,4 +236,17 @@ pytest test
   * [TensorFlow C API](https://www.tensorflow.org/install/lang_c)
   * [GaudiTensorFlow](https://gitlab.cern.ch/lhcb/LHCb/-/tree/master/Tools/GaudiTensorFlow)
  
+## Citing scikinC
+L. Anderlini, M. Barbetti, *"scikinC: a tool for deploying machine learning as binaries"*, [Proceeding of Science (**CompTools2021**) 034](https://pos.sissa.it/409/034)
+```bibtex
+@article{Anderlini:2022ltm,
+    author = "Anderlini, Lucio and Barbetti, Matteo",
+    title = "{scikinC: a tool for deploying machine learning as binaries}",
+    doi = "10.22323/1.409.0034",
+    journal = "PoS",
+    volume = "CompTools2021",
+    pages = "034",
+    year = "2022"
+}
+```
 
