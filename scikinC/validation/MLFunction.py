@@ -9,11 +9,10 @@ class MLFunction:
     Arguments:
         * lib_path (str): path to the shared object
         * function_name (str): name of a double*(double*, double*) function defined in the shared object
-        * n_inputs (int): number of inputs variables
         * n_outputs (int): number of output variables
     """
 
-    def __init__(self, lib_path, function_name, n_inputs, n_outputs, float_type=np.float32):
+    def __init__(self, lib_path, function_name, n_outputs, float_type=np.float32):
         if not (lib_path.startswith("/") or lib_path.startswith("./")):
             lib_path = "./" + lib_path
 
@@ -21,25 +20,18 @@ class MLFunction:
 
         self._f = getattr(self._lib, function_name)
         self._f.argtypes = [np.ctypeslib.ndpointer(dtype=np.float32) for _ in (1, 2)]
-
-        self._n_inputs = n_inputs
         self._n_outputs = n_outputs
 
-        self._float_type = np.float32
-
-    @property
-    def n_inputs(self):
-        "Number of input nodes"
-        return self._n_inputs
+        self._float_type = float_type
 
     @property
     def n_outputs(self):
-        "Number of output nodes"
+        """Number of output nodes"""
         return self._n_outputs
 
     @property
     def float_type(self):
-        "Type of float (np.float32 or np.float64)"
+        """Type of float (np.float32 or np.float64)"""
         return self._float_type
 
     def __call__(self, data_in):
@@ -71,4 +63,3 @@ class MLFunction:
             return output_rows[0]
 
         return np.stack(output_rows)
-

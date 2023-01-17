@@ -24,7 +24,7 @@ def scaler():
 @pytest.fixture
 def mlfun(scaler):
     deplyed_model = deploy_pickle("standardscaler", scaler)
-    return MLFunction(deplyed_model.compiled, "transform", 10, 10)
+    return MLFunction(deplyed_model.compiled, "transform", 10)
 
 
 ################################################################################
