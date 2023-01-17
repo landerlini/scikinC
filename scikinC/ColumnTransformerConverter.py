@@ -25,7 +25,7 @@ class ColumnTransformerConverter (InvertibleConverter):
         raise NotImplementedError ("Columns can only be indexed with integers, got", 
             [type(c) for c in columns])
 
-      index_mapping += columns
+      index_mapping += [c for c in columns]
 
       if key is None:
         key = "Preprocessor"
