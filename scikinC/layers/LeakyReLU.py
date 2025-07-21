@@ -10,7 +10,7 @@ class LeakyReLU (BaseLayerConverter):
     """Return the definition of the layer function"""
     ret = []
 
-    nX = self.layer.output_shape[1]
+    nX = self.layer.output_shape[1] if hasattr(self.layer, 'output_shape') else self.layer.output.shape[1]
 
     ret += ["""
         extern "C"

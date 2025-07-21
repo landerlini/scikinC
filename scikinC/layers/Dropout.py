@@ -22,7 +22,7 @@ class Dropout(BaseLayerConverter):
         }
         """ % dict(
             layername=self.name,
-            nX=self.layer.output_shape[1],
+            nX=self.layer.output_shape[1] if hasattr(self.layer, 'output_shape') else self.layer.output.shape[1],
         )]
 
         return "\n".join(ret)
