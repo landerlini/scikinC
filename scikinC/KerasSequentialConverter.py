@@ -32,9 +32,10 @@ class KerasSequentialConverter (BaseConverter):
     for converter in converters:
       lines += [ converter.definition() ] 
 
-    nX = model.layers[0].kernel.shape[0] 
-    nY = model.layers[-1].output_shape[-1] 
-    nMax = max (*[l.output_shape[1] for l in model.layers]+[nX]) 
+    nX = model.layers[0].kernel.shape[0]
+    output_layer = model.layers[-1]
+    nY = output_layer.output_shape[1] if hasattr(output_layer, 'output_shape') else output_layer.output.shape
+    nMax = max (*[l.output_shape[1] if hasattr(l, 'output_shape') else l.output.shape[1] for l in model.layers]+[nX])
 
     lines.append ("""
     extern "C"
