@@ -18,7 +18,7 @@ class MinMaxScalerConverter (InvertibleConverter):
       FLOAT_T output_min = %(outputMin)f; 
       FLOAT_T output_max = %(outputMax)f; 
 
-      for (int c = 0; c < %(nFeatures)d; ++c)
+      for (c = 0; c < %(nFeatures)d; ++c)
         ret [c] = (input[c] - input_min[c]) / (input_max[c] - input_min[c]) 
                   * (output_max - output_min) + output_min;
 
@@ -46,7 +46,7 @@ class MinMaxScalerConverter (InvertibleConverter):
       FLOAT_T output_min[] = %(outputMin)s; 
       FLOAT_T output_max[] = %(outputMax)s; 
 
-      for (int c = 0; c < %(nFeatures)d; ++c)
+      for (c = 0; c < %(nFeatures)d; ++c)
         ret [c] = (input[c] - input_min) / (input_max - input_min) 
                   * (output_max[c] - output_min[c]) + output_min[c];
 
