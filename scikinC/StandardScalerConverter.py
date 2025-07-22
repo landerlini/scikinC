@@ -15,7 +15,7 @@ class StandardScalerConverter (InvertibleConverter):
       FLOAT_T mean [] = %(mean)s; 
       FLOAT_T scale[] = %(scale)s; 
 
-      for (int c = 0; c < %(nFeatures)d; ++c)
+      for (c = 0; c < %(nFeatures)d; ++c)
         ret [c] = (input[c] - mean[c]) / scale[c];
 
       return ret;
@@ -37,7 +37,7 @@ class StandardScalerConverter (InvertibleConverter):
       FLOAT_T mean [] = %(mean)s; 
       FLOAT_T scale[] = %(scale)s; 
 
-      for (int c = 0; c < %(nFeatures)d; ++c)
+      for (c = 0; c < %(nFeatures)d; ++c)
         ret [c] = (input[c] * scale[c]) + mean[c]; 
 
       return ret;
