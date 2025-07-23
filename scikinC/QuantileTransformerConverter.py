@@ -34,7 +34,6 @@ class QuantileTransformerConverter(InvertibleConverter):
         uniform_to_normal_string = """
       FLOAT_T u[] = %(xAxis)s;
       FLOAT_T norm[] = %(yAxis)s;
-      int c;
 
       for (c = 0; c < %(nFeatures)d; ++c)
         ret[c] = qtc_interpolate_for_%(name)s (ret[c], norm, u, %(n)d); 
@@ -49,7 +48,6 @@ class QuantileTransformerConverter(InvertibleConverter):
         normal_to_uniform_string = """
       FLOAT_T u[] = %(xAxis)s;
       FLOAT_T norm[] = %(yAxis)s;
-      int c;
 
       for (c = 0; c < %(nFeatures)d; ++c)
         x[c] = qtc_interpolate_for_%(name)s (x[c], u, norm, %(n)d); 
