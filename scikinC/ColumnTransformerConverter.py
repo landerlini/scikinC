@@ -54,7 +54,6 @@ class ColumnTransformerConverter (InvertibleConverter):
     extern "C"
     FLOAT_T* %(name)s (FLOAT_T* ret, const FLOAT_T *input)
     {
-      int c;
       FLOAT_T bufin[%(nFeatures)d], bufout[%(nFeatures)s];
 
     """ % dict(
@@ -102,7 +101,6 @@ class ColumnTransformerConverter (InvertibleConverter):
     extern "C"
     FLOAT_T* %(name)s_inverse (FLOAT_T* ret, const FLOAT_T *input)
     {
-      int c;
       FLOAT_T bufin[%(nFeatures)d], bufout[%(nFeatures)s];
 
     """ % dict(
