@@ -32,6 +32,8 @@ class FunctionTransformerConverter (InvertibleConverter):
     
     if hasattr(model, 'func_inC'):
       fwd = model.func_inC
+    elif hasattr(model.func, 'inC'):
+      fwd = model.func.inC
     elif model.func in func_dict.keys():
       fwd = func_dict[model.func]
     else:
@@ -42,6 +44,8 @@ class FunctionTransformerConverter (InvertibleConverter):
 
     if hasattr(model, 'inverse_func_inC'):
       bwd = model.inverse_func_inC
+    elif hasattr(model.inverse_func, 'inC'):
+      bwd = model.inverse_func.inC
     elif model.inverse_func in func_dict.keys():
       bwd = func_dict[model.inverse_func]
     else:
@@ -63,7 +67,7 @@ class FunctionTransformerConverter (InvertibleConverter):
     {
       int c;
 
-      for (int c = 0; c < %(nFeatures)d; ++c)
+      for (c = 0; c < %(nFeatures)d; ++c)
         ret [c] = %(func)s;
 
       return ret;
@@ -81,7 +85,7 @@ class FunctionTransformerConverter (InvertibleConverter):
     {
       int c;
 
-      for (int c=0; c < %(nFeatures)d; ++c)
+      for (c=0; c < %(nFeatures)d; ++c)
         ret [c]= %(func)s;
 
       return ret;
