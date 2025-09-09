@@ -45,11 +45,11 @@ class DeployedModel:
       return ret 
 
 
-    def call_function(self, nArgs, args, funcname):
+    def call_function(self, n_outputs, args, funcname):
         path = os.path.dirname(os.path.realpath(__file__))
 
         output = subprocess.check_output(
-            [path+"/wrap.exe", self.compiled, funcname, str(nArgs)] +
+            [path+"/wrap.exe", self.compiled, funcname, str(n_outputs)] +
             [str(x) for x in args]
         )
 

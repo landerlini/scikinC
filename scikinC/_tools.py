@@ -24,7 +24,8 @@ def array2c (array, fmt = None):
 ################################################################################
 def get_n_features (algo):
   if hasattr(algo, 'n_features'):    return algo.n_features  
-  elif hasattr(algo, 'n_features_'): return algo.n_features_  
+  elif hasattr(algo, 'n_features_'): return algo.n_features_
+  elif hasattr(algo, 'n_output_features_'): return algo.n_output_features_
   elif algo.__class__.__name__ == 'Sequential':
     return algo.layers[-1].kernel.shape[-1] 
   elif algo.__class__.__name__ == 'DecorrTransformer':
