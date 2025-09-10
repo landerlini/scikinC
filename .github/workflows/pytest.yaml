@@ -1,7 +1,9 @@
 name: Pytest Suite
 
 on:
-  pull_request: main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   test:
