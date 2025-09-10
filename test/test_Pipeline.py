@@ -1,5 +1,4 @@
 import numpy as np
-from rich.table import Column
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
