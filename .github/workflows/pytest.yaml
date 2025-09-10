@@ -23,8 +23,12 @@ jobs:
         run: |
           pip install .[keras] pytest pytest-md-report
       - name: Run tests
-        env:
-          pytest_verbosity: 2
         run: |
-          pytest --tb=short --durations=10 --md-report --md-report-output=report.md
+          pytest \
+            --tb=short \
+            --durations=10 \
+            --md-report \
+            --md-report-flavor gfm \
+            --md-report-verbose=2 \
+            --md-report-output=report.md
           cat report.md >> $GITHUB_STEP_SUMMARY
