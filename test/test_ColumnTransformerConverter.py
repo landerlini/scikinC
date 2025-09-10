@@ -6,11 +6,12 @@ from sklearn.compose import ColumnTransformer
 import pytest
 
 # Local testing infrastructure
-from wrap import deploy_pickle 
+from wrap import deploy_pickle
+from fixture_registry import fixtures
 
 ################################################################################
 ## Test preparation
-@pytest.fixture
+@fixtures.register('invertible')
 def passthrough_transformer():
   transformer_ = ColumnTransformer([], remainder='passthrough')
   X = np.random.uniform (20,30,(1000, 10))
@@ -18,7 +19,7 @@ def passthrough_transformer():
   return transformer_
 
 
-@pytest.fixture
+@fixtures.register()
 def double_passthrough_transformer():
   transformer_ = ColumnTransformer([
     ('keep1', 'passthrough', [0,2]),
@@ -29,7 +30,7 @@ def double_passthrough_transformer():
   return transformer_
 
 
-@pytest.fixture
+@fixtures.register('invertible')
 def ss_and_passthrough_transformer():
   transformer_ = ColumnTransformer([
     ('ss', StandardScaler(), [1,2,3]),
@@ -39,7 +40,7 @@ def ss_and_passthrough_transformer():
   return transformer_
 
 
-@pytest.fixture
+@fixtures.register('invertible')
 def qt_and_passthrough_transformer():
   transformer_ = ColumnTransformer([
     ('qt', QuantileTransformer(output_distribution='normal'), [0,2]),
@@ -49,7 +50,7 @@ def qt_and_passthrough_transformer():
   return transformer_
 
 
-@pytest.fixture
+@fixtures.register('invertible')
 def double_qt_and_passthrough_transformer():
   transformer_ = ColumnTransformer([
     ('qt1', QuantileTransformer(n_quantiles=100, output_distribution='normal'), [3,4]),
@@ -60,7 +61,7 @@ def double_qt_and_passthrough_transformer():
   return transformer_
 
 
-@pytest.fixture
+@fixtures.register('invertible')
 def qt_and_ss_and_passthrough_transformer():
   transformer_ = ColumnTransformer([
     ('qt', QuantileTransformer(output_distribution='normal'), [0,1]),
@@ -71,7 +72,7 @@ def qt_and_ss_and_passthrough_transformer():
   return transformer_
 
 
-@pytest.fixture
+@fixtures.register('invertible')
 def qt_and_ft_transformer_only():
   transformer_ = ColumnTransformer([
     ('qt', QuantileTransformer(output_distribution='normal'), [0,1,2,3,4]),
@@ -82,7 +83,7 @@ def qt_and_ft_transformer_only():
   return transformer_
 
 
-@pytest.fixture
+@fixtures.register('invertible')
 def double_qt_transformer_only():
   transformer_ = ColumnTransformer([
     ('qt1', QuantileTransformer(n_quantiles=100, output_distribution='normal'), [5,6,7,8,9]),
@@ -93,7 +94,7 @@ def double_qt_transformer_only():
   return transformer_
 
 
-@pytest.fixture
+@fixtures.register()
 def qt_and_ft_transformer_dropping():
   transformer_ = ColumnTransformer([
     ('qt', QuantileTransformer(output_distribution='normal'), [0,2]),
@@ -104,34 +105,10 @@ def qt_and_ft_transformer_dropping():
   return transformer_
 
 
-transformers = [
-    'passthrough_transformer',
-    'double_passthrough_transformer',
-    'ss_and_passthrough_transformer',
-    'qt_and_passthrough_transformer',
-    'double_qt_and_passthrough_transformer',
-    'qt_and_ss_and_passthrough_transformer',
-    'qt_and_ft_transformer_only',
-    'double_qt_transformer_only',
-    'qt_and_ft_transformer_dropping',
-    ]
-
-invertible_transformers = [
-    'passthrough_transformer',
-    'ss_and_passthrough_transformer',
-    'qt_and_passthrough_transformer',
-    'double_qt_and_passthrough_transformer',
-    'qt_and_ss_and_passthrough_transformer',
-    'qt_and_ft_transformer_only',
-    'double_qt_transformer_only'
-    ]
-
-
 ################################################################################
 ## Real tests
-@pytest.mark.parametrize ('scaler', transformers)
-def test_forward (scaler, request):
-  scaler = request.getfixturevalue(scaler)
+@fixtures.test()
+def test_forward (scaler):
   deployed = deploy_pickle("functiontransformer", scaler)
   xtest = np.random.uniform (21,29, 10)
   py = scaler.transform (xtest[None])
@@ -141,9 +118,8 @@ def test_forward (scaler, request):
   assert np.abs(py-c).max() < 1e-4
  
 
-@pytest.mark.parametrize ('scaler', invertible_transformers)
-def test_inverse (scaler, request):
-  scaler = request.getfixturevalue(scaler)
+@fixtures.test('invertible')
+def test_inverse (scaler):
   deployed = deploy_pickle("function_transformer", scaler)
   xtest = np.random.uniform (0,1, 10)
   py = np.empty (10)

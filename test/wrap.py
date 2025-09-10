@@ -86,7 +86,7 @@ def deploy_keras (name, obj, float_t = "float"):
   ### Randomize UID 
   s = string.ascii_letters 
   uid = [s[np.random.randint(len(s))] for _ in range(16)]
-  tmpfile = name + ''.join(uid)
+  tmpfile = name + ''.join(uid) + ".keras"
 
   obj.save(tmpfile)
 

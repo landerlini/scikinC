@@ -9,55 +9,49 @@ import pytest
 
 # Local testing infrastructure
 from wrap import deploy_pickle
-from testing_boilerplate import fixtures
+from fixture_registry import fixtures
 
 ################################################################################
 ## Test preparation
-@fixtures.register
+@fixtures.register()
 def scaler_uniform():
   scaler_ = QuantileTransformer()
   X = np.random.uniform (20,30,(1000, 20))
   scaler_.fit (X) 
   return scaler_
 
-@fixtures.register
+@fixtures.register()
 def scaler_normal():
   scaler_ = QuantileTransformer(output_distribution='normal', n_quantiles=100)
   X = np.random.uniform (20,30,(1000, 20))
   scaler_.fit (X) 
   return scaler_
 
-@fixtures.register
+@fixtures.register()
 def scaler_bool_uniform():
   scaler_ = QuantileTransformer(output_distribution='uniform')
   X = np.random.choice ([22.,27.], (1000, 20), (0.8, 0.2))
   scaler_.fit (X) 
   return scaler_
 
-@fixtures.register
+@fixtures.register()
 def scaler_bool_normal():
   scaler_ = QuantileTransformer(output_distribution='normal')
   X = np.random.choice ([22.,27.], (1000, 20), (0.8, 0.2))
   scaler_.fit (X) 
   return scaler_
 
-@fixtures.register
+@fixtures.register()
 def scaler_delta_normal():
   scaler_ = QuantileTransformer(output_distribution='normal')
   X = np.full((10000,20), np.pi)
   scaler_.fit (X) 
   return scaler_
 
-def read_file(filename):
-  dir = os.path.dirname(__file__)
-  with open(os.path.join(dir, "pathologies", filename), 'rb') as f:
-    return pickle.load(f)
-
-
 
 ################################################################################
 ## Real tests
-@fixtures.test
+@fixtures.test()
 def test_forward (scaler):
   n_features = scaler.n_features_in_ if hasattr(scaler, 'n_features_in_') else 20
 
@@ -74,7 +68,7 @@ def test_forward (scaler):
     array = np.array(results)
     print (array.T)
 
-@fixtures.test
+@fixtures.test()
 def test_inverse (scaler):
   if hasattr(scaler, 'transform_inverse'):
     deployed = deploy_pickle("quantiletransformer", scaler)

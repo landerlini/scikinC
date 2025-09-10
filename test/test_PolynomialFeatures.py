@@ -6,7 +6,7 @@ import pytest
 
 # Local testing infrastructure
 from wrap import deploy_pickle
-from testing_boilerplate import fixtures
+from fixture_registry import fixtures
 
 
 ################################################################################
