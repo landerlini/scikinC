@@ -7,12 +7,21 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        include: 
+          - {"version": "3.6",   "os": "ubuntu-22.04"}
+          - {"version": "3.7",   "os": "ubuntu-22.04"}
+          - {"version": "3.8",   "os": "ubuntu-latest"}
+          - {"version": "3.9",   "os": "ubuntu-latest"}
+          - {"version": "3.10",  "os": "ubuntu-latest"}
+          - {"version": "3.11",   "os": "ubuntu-latest"}
+          - {"version": "3.12",   "os": "ubuntu-latest"}
+          - {"version": "3.13",   "os": "ubuntu-latest"}
+
     name: Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
@@ -25,10 +34,8 @@ jobs:
       - name: Run tests
         run: |
           pytest \
+            -v \
             --tb=short \
             --durations=10 \
-            --md-report \
-            --md-report-flavor gfm \
-            --md-report-verbose=2 \
-            --md-report-output=report.md
-          cat report.md >> $GITHUB_STEP_SUMMARY
+            &> report
+          cat report >> $GITHUB_STEP_SUMMARY
