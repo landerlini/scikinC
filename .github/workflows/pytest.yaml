@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         include: 
-          - {"version": "3.6",   "os": "ubuntu-20.04"}
+          # - {"version": "3.6",   "os": "ubuntu-20.04"} # EOL: 2021-12-23
           - {"version": "3.7",   "os": "ubuntu-22.04"}
           - {"version": "3.8",   "os": "ubuntu-latest"}
           - {"version": "3.9",   "os": "ubuntu-latest"}
@@ -34,7 +34,7 @@ jobs:
       - name: Run tests
         uses: dariocurr/pytest-summary@main
         with:
-          options: -v --durations=10 --tb=short
+          options: -v --durations=10 --tb=short test/
           
           
       # - name: Run tests
