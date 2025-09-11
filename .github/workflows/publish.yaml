@@ -21,7 +21,7 @@ jobs:
 
       - name: Install build tools
         run: |
-          python -m pip install --upgrade pip build twine
+          python -m pip install --upgrade pip build twine setuptools
 
       - name: Extract version from tag and inject into setup.py
         run: |
