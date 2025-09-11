@@ -20,22 +20,28 @@ jobs:
           - {"version": "3.12",   "os": "ubuntu-latest"}
           - {"version": "3.13",   "os": "ubuntu-latest"}
 
-    name: Python ${{ matrix.python-version }}
+    name: Python ${{ matrix.version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.version }}
       - name: Install dependencies
         run: |
           pip install .[keras] pytest pytest-md-report
       - name: Run tests
-        run: |
-          pytest \
-            -v \
-            --tb=short \
-            --durations=10 \
-            &> report
-          cat report >> $GITHUB_STEP_SUMMARY
+        uses: dariocurr/pytest-summary@main
+        with:
+          options: -v --durations=10 --tb=short
+          
+          
+      # - name: Run tests
+      #   run: |
+      #     pytest \
+      #       -v \
+      #       --tb=short \
+      #       --durations=10 \
+      #       &> report
+      #     cat report >> $GITHUB_STEP_SUMMARY
