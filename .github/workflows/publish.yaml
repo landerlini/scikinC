@@ -27,10 +27,8 @@ jobs:
         run: |
           TAG_VERSION=${GITHUB_REF#refs/tags/}
           sed -i "s/version=\".*\"/version=\"$TAG_VERSION\"/" setup.py
-
-      - name: Validate version
-        run: |
           FILE_VERSION=$(python setup.py --version)
+          echo "GITHUB_REF: $GITHUB_REF"
           echo "Tag version: $TAG_VERSION"
           echo "File version: $FILE_VERSION"
           test "$TAG_VERSION" = "$FILE_VERSION"
