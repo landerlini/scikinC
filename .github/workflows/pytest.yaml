@@ -34,7 +34,8 @@ jobs:
       - name: Run tests
         uses: dariocurr/pytest-summary@main
         with:
-          options: -v --durations=10 --tb=short test/
+          options: -v --durations=10 --tb=short 
+          paths: test/
           
           
       # - name: Run tests
