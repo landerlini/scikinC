@@ -24,7 +24,7 @@ int main (int argc, char *argv[])
   const char* libname = argv[1];
   const char* funcname = argv[2];
   const int nY = atoi (argv[3]); 
-  const size_t in0 = 4;
+  const size_t in0 = 4; // This is the number of fixed arguments, used later to compute nX
   const size_t nX = argc-in0; 
   FLOAT_T iBuf[1064], oBuf[1064];
 

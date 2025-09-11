@@ -27,7 +27,7 @@ class LeakyReLU (BaseLayerConverter):
         """ % dict(
           layername = self.name, 
           nX = nX,
-          alpha = self.layer.alpha
+          alpha = self.layer.alpha if hasattr(self.layer, 'alpha') else self.layer.negative_slope
         )]
 
     return "\n".join(ret)

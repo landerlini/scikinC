@@ -20,8 +20,9 @@ __CONVERTERS = {
       'FastQuantileLayer': 'FastQuantileLayerConverter',
       'FunctionTransformer': 'FunctionTransformerConverter',
       'ColumnTransformer': 'ColumnTransformerConverter',
+      'PolynomialFeatures': 'PolynomialFeaturesConverter',
 
-      ## Keras 
+    ## Keras
       'Sequential': 'KerasSequentialConverter', 
     }
 

@@ -1,0 +1,48 @@
+name: Pytest Suite
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include: 
+          # - {"version": "3.6",   "os": "ubuntu-20.04"} # EOL: 2021-12-23
+          - {"version": "3.7",   "os": "ubuntu-22.04"}
+          - {"version": "3.8",   "os": "ubuntu-latest"}
+          - {"version": "3.9",   "os": "ubuntu-latest"}
+          - {"version": "3.10",  "os": "ubuntu-latest"}
+          - {"version": "3.11",   "os": "ubuntu-latest"}
+          - {"version": "3.12",   "os": "ubuntu-latest"}
+          - {"version": "3.13",   "os": "ubuntu-latest"}
+
+    name: Python ${{ matrix.version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.version }}
+      - name: Install dependencies
+        run: |
+          pip install .[keras] pytest pytest-md-report
+      - name: Run tests
+        uses: dariocurr/pytest-summary@main
+        with:
+          options: -v --durations=10 --tb=short 
+          paths: test/
+          
+          
+      # - name: Run tests
+      #   run: |
+      #     pytest \
+      #       -v \
+      #       --tb=short \
+      #       --durations=10 \
+      #       &> report
+      #     cat report >> $GITHUB_STEP_SUMMARY

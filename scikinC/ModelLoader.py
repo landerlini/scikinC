@@ -33,6 +33,10 @@ def load_from_string ( string ):
 
 
   if os.path.isfile (string):
+    if string.endswith(".keras"):
+      from tensorflow.keras.models import load_model
+      return ({name or _basename(string): load_model (string, compile=False)},)
+
     try:
       with open ( string, 'rb' ) as f:
         ## it is a pickled object 

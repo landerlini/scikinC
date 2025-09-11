@@ -2,7 +2,7 @@ import sys
 from scikinC import BaseConverter
 import numpy as np
 
-from scikinC._tools import array2c, retrieve_prior
+from scikinC._tools import array2c, retrieve_prior, sklearn_min_version
 
 class GBDTTraversalConverter (BaseConverter):
   """
@@ -41,9 +41,11 @@ class GBDTTraversalConverter (BaseConverter):
 
     min_, max_=self._get_limits(bdt)
 
-    nX = bdt.n_features_in_ 
+    nX = bdt.n_features_in_
 
-    retvar="FLOAT_T ret[%d]" % n_classes
+    n_output = max(2, n_classes) if sklearn_min_version("1.0") else n_classes
+
+    retvar="FLOAT_T ret[%d]" % n_output
     invar="FLOAT_T inp[%d]" % nX
     lines += [
         "#include <math.h>",
@@ -100,20 +102,22 @@ class GBDTTraversalConverter (BaseConverter):
 
 
       for iClass in range (n_classes):
-        lines.append ( "    "    
-          "accumulator[%(iClass)d] += %(learningrate).10f * __%(name)s_traversal ( inp, "
-          "  v%(iTree)03d_%(iClass)02d, t%(iTree)03d_%(iClass)02d, f%(iTree)03d_%(iClass)02d, l%(iTree)03d_%(iClass)02d, r%(iTree)03d_%(iClass)02d );  "
-         % dict(
-          learningrate = bdt.learning_rate,
-          maxlen = len (tree[iClass].tree_.feature), 
-          iClass = iClass,
-          iTree = iTree,
-          name = name or "bdt",
-          value = array2c ([v[0][0] for v in tree[iClass].tree_.value]), 
-          threshold = array2c (threshold, "%.20f"), 
-          feature = array2c (feature, "%.0f"), 
-          left = array2c ([l for l in tree[iClass].tree_.children_left], "%.0f"), 
-          right = array2c ([r for r in tree[iClass].tree_.children_right], "%.0f"), 
+          class_id = 1 if n_classes == 1 else iClass
+          lines.append ( "    "
+              "accumulator[%(class_id)d] += %(learningrate).10f * __%(name)s_traversal ( inp, "
+              "  v%(iTree)03d_%(iClass)02d, t%(iTree)03d_%(iClass)02d, f%(iTree)03d_%(iClass)02d, l%(iTree)03d_%(iClass)02d, r%(iTree)03d_%(iClass)02d );  "
+              % dict(
+              class_id=class_id,
+              learningrate=bdt.learning_rate,
+              maxlen=len (tree[iClass].tree_.feature),
+              iClass=iClass,
+              iTree=iTree,
+              name=name or "bdt",
+              value=array2c ([v[0][0] for v in tree[iClass].tree_.value]),
+              threshold=array2c (threshold, "%.20f"),
+              feature=array2c (feature, "%.0f"),
+              left=array2c ([l for l in tree[iClass].tree_.children_left], "%.0f"),
+              right=array2c ([r for r in tree[iClass].tree_.children_right], "%.0f"),
           ))
 
       lines.append ("  }") 
@@ -130,20 +134,19 @@ class GBDTTraversalConverter (BaseConverter):
       lines.append("  update_%s_tree%03d (acc, inp); " % (name or bdt, iTree))
 
 
-
-    if n_classes > 1:
+    if n_output > 1:
       lines += [
           "  short argmax = 0; ",
-          "  for (i = 0; i < %d; ++i) if (acc[i] > acc[argmax]) argmax = i; " % n_classes,
+          "  for (i = 0; i < %d; ++i) if (acc[i] > acc[argmax]) argmax = i; " % n_output,
           "  if (acc[argmax] > 1e10) { ",
-          "    for (i = 0; i < %d; ++i) ret[i] = (i==argmax ? 1.: 0.); " % n_classes,
+          "    for (i = 0; i < %d; ++i) ret[i] = (i==argmax ? 1.: 0.); " % n_output,
           "    return ret; ",
           "  }",
-          "  for (i=0; i < %d; ++i) acc[i] = exp(acc[i]);" % n_classes,
-          "  for (i=0; i < %d; ++i) acc[i] = (acc[i] > 1e300?1e300:acc[i]);" % n_classes,
+          "  for (i=0; i < %d; ++i) acc[i] = exp(acc[i]);" % n_output,
+          "  for (i=0; i < %d; ++i) acc[i] = (acc[i] > 1e300?1e300:acc[i]);" % n_output,
           "  long double sum = 0;",
-          "  for (i=0; i < %d; ++i) sum += acc[i];" % n_classes,
-          "  for (i=0; i < %d; ++i) acc[i] /= sum;" % n_classes,
+          "  for (i=0; i < %d; ++i) sum += acc[i];" % n_output,
+          "  for (i=0; i < %d; ++i) acc[i] /= sum;" % n_output,
         ]
     else:
       lines += [
@@ -153,7 +156,7 @@ class GBDTTraversalConverter (BaseConverter):
 
 
     lines += [
-        "  for (i = 0; i < %d; ++i) ret[i] = acc[i];" % n_classes, 
+        "  for (i = 0; i < %d; ++i) ret[i] = acc[i];" % n_output,
         "  return ret;", "}"
         ]
 

@@ -182,14 +182,14 @@ A few notes:
 ## Implemented converters
 
 #### Scikit-Learn preprocessing
-  | Model                  | Implementation  | Test      | Notes                         |
-  | ---------------------- | --------------- | --------- | ----------------------------- |
-  | `MinMaxScaler`         | Available       | Available |                               |
-  | `StandardScaler`       | Available       | Available |                               |
-  | `QuantileTransformer`  | Available       | Available |                               |
-  | `FunctionTransformer`  | Available       | Available | Only functions in math.h      |
-  | `ColumnTransformer`    | Available       | Available | Only integer column indices   |
-  | `Pipeline`             | Available       | Partial   | Pipelines of pipelines break  |
+  | Model                  | Implementation  | Test      | Notes                             |
+  | ---------------------- | --------------- | --------- |-----------------------------------|
+  | `MinMaxScaler`         | Available       | Available |                                   |
+  | `StandardScaler`       | Available       | Available |                                   |
+  | `QuantileTransformer`  | Available       | Available |                                   |
+  | `FunctionTransformer`  | Available       | Available | Supports user-defined C functions |
+  | `ColumnTransformer`    | Available       | Available | Only integer column indices       |
+  | `Pipeline`             | Available       | Partial   | Pipelines of pipelines break      |
 
 #### Scikit-Learn models
   | Model                        | Implementation  | Test      | Notes                         |

@@ -45,11 +45,11 @@ class DeployedModel:
       return ret 
 
 
-    def call_function(self, nArgs, args, funcname):
+    def call_function(self, n_outputs, args, funcname):
         path = os.path.dirname(os.path.realpath(__file__))
 
         output = subprocess.check_output(
-            [path+"/wrap.exe", self.compiled, funcname, str(nArgs)] +
+            [path+"/wrap.exe", self.compiled, funcname, str(n_outputs)] +
             [str(x) for x in args]
         )
 
@@ -86,7 +86,7 @@ def deploy_keras (name, obj, float_t = "float"):
   ### Randomize UID 
   s = string.ascii_letters 
   uid = [s[np.random.randint(len(s))] for _ in range(16)]
-  tmpfile = name + ''.join(uid)
+  tmpfile = name + ''.join(uid) + ".keras"
 
   obj.save(tmpfile)
 
