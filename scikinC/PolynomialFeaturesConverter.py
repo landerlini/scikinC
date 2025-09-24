@@ -27,8 +27,6 @@ class PolynomialFeaturesConverter (BaseConverter):
             )
 
 
-    print(powers, file=sys.stderr)
-
     lines.append ( """
     extern "C"
     FLOAT_T* %(name)s (FLOAT_T* ret, const FLOAT_T *input)
