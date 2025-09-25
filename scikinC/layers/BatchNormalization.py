@@ -17,7 +17,7 @@ class BatchNormalization(BaseLayerConverter):
         gamma = self.layer.gamma.numpy()
         beta = self.layer.beta.numpy()
         mean = self.layer.moving_mean.numpy()
-        var = self.layer.moving_var.numpy()
+        var = self.layer.moving_variance.numpy()
         epsilon = self.layer.epsilon
         n_inputs = len(gamma)
 
