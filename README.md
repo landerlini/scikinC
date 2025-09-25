@@ -189,6 +189,7 @@ A few notes:
   | `QuantileTransformer`  | Available       | Available |                                   |
   | `FunctionTransformer`  | Available       | Available | Supports user-defined C functions |
   | `ColumnTransformer`    | Available       | Available | Only integer column indices       |
+  | `PolynomialFeatures`   | Available       | Available |                                   |
   | `Pipeline`             | Available       | Partial   | Pipelines of pipelines break      |
 
 #### Scikit-Learn models
@@ -207,6 +208,7 @@ A few notes:
   | `Dense`                      | Available       | Available |                               |
   | `PReLU`                      | Available       | Available |                               |
   | `LeakyReLU`                  | Available       | Available |                               |
+  | `BatchNormalization`         | Available       | Available |                               |
 
 #### Keras Activation functions
   | Model                        | Implementation  | Test      | Notes                         |
