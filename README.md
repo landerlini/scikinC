@@ -211,11 +211,13 @@ A few notes:
   | `BatchNormalization`         | Available       | Available |                               |
 
 #### Keras Activation functions
-  | Model                        | Implementation  | Test      | Notes                         |
-  | ---------------------------- | --------------- | --------- | ----------------------------- |
-  | `tanh`                       | Available       | Available |                               |
-  | `sigmoid`                    | Available       | Available |                               |
-  | `relu`                       | Available       | Available |                               |
+  | Model     | Implementation  | Test      | Notes                          |
+  |-----------| --------------- | --------- |--------------------------------|
+  | `tanh`    | Available       | Available |                                |
+  | `sigmoid` | Available       | Available |                                |
+  | `relu`    | Available       | Available |                                |
+  | `elu`     | Available       |           |                                |
+  | `celu`    | Available       |           | Only for alpha=1 (celu == elu) |
 
 
 ## Running tests
