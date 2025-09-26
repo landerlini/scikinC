@@ -42,8 +42,8 @@ def classifier_dense():
         tf.keras.layers.Dense(16, activation='tanh'),
         tf.keras.layers.Dense(16, activation='sigmoid'),
         tf.keras.layers.Dense(16, activation='relu'),
-        tf.keras.layers.Dense(16, activation='elu'),
-        tf.keras.layers.Dense(16, activation='celu'),
+        tf.keras.layers.Dense(16, activation='elu' if hasattr(tf.keras.activations, 'elu') else 'linear'),
+        tf.keras.layers.Dense(16, activation='celu' if hasattr(tf.keras.activations, 'celu') else 'linear'),
         tf.keras.layers.Dense(16),
         tf.keras.layers.Dense(1, activation='sigmoid')
         ])

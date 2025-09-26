@@ -19,7 +19,7 @@ class BaseLayerConverter:
     elif activation == 'relu':
       return "%(x)s = %(x)s > 0. ? %(x)s : 0.;" % {'x':x}
     elif activation == 'celu' or activation == 'elu':
-      return "%(x)s = %(x)s > 0. ? %(x)s : exp(x) - 1;" % {'x': x}
+      return "%(x)s = %(x)s > 0. ? %(x)s : exp(%(x)s) - 1;" % {'x': x}
     elif activation == 'linear':
       return ""
     else:
