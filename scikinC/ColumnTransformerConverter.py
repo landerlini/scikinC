@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 
 from sklearn.preprocessing import FunctionTransformer
 
@@ -30,10 +31,10 @@ class ColumnTransformerConverter (InvertibleConverter):
       if key is None:
         key = "Preprocessor"
       if key in keys:
-        key.append (str(1+len(keys)))
+        key = key + str(1+len(keys))
 
       if isinstance(transformer, (FunctionTransformer,)):
-        if transformer.func is None and transformer.inverse_func is None:
+        if getattr(transformer, 'func', None) is None and getattr(transformer, 'inverse_func', None) is None:
           transformer = 'passthrough'
         else:
           transformer.n_features_in_ = len(columns)
@@ -46,10 +47,8 @@ class ColumnTransformerConverter (InvertibleConverter):
           scikinC.convert({k: t for k,t,_ in transformers if t != 'passthrough'})
           )
     
-    mapping = {k: c for k,_,c in transformers}
-
-    nFeatures = 1+max(index_mapping)
-
+    nFeatures = max(1+max(index_mapping), len(index_mapping))
+    
     lines.append("""
     extern "C"
     FLOAT_T* %(name)s (FLOAT_T* ret, const FLOAT_T *input)
@@ -62,13 +61,16 @@ class ColumnTransformerConverter (InvertibleConverter):
         )
       )
 
+    # This is a copy where used indices are set to None once processed
+    id_map_tmp = deepcopy(index_mapping)
     for key, transformer, columns in transformers:
       lines.append("// Transforming %s columns" % key)
       if transformer == 'passthrough':
         for column in columns:
           lines.append("""
           ret [%(output)d] = input[%(column)d];
-          """%dict(output=index_mapping.index(column), column=column))
+          """%dict(output=id_map_tmp.index(column), column=column))
+          id_map_tmp[id_map_tmp.index(column)] = None
       else:
         for iCol, column in enumerate(columns):
           lines.append("""         bufin [%(iCol)d] = input[%(column)d];"""%
@@ -77,7 +79,8 @@ class ColumnTransformerConverter (InvertibleConverter):
             % dict(name=key))
         for iCol, column in enumerate(columns):
           lines.append("""         ret[%(index_out)d] = bufout[%(iCol)d];"""% 
-              dict(index_out=index_mapping.index(column), iCol=iCol))
+              dict(index_out=id_map_tmp.index(column), iCol=iCol))
+          id_map_tmp[id_map_tmp.index(column)] = None
 
     lines.append ("""
       return ret;

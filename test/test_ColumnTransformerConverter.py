@@ -29,6 +29,18 @@ def double_passthrough_transformer():
   transformer_.fit (X) 
   return transformer_
 
+@fixtures.register()
+def expanding_passthrough_transformer():
+  transformer_ = ColumnTransformer([
+    ('keep1', 'passthrough', [0]),
+    ('keep2', 'passthrough', [0, 1]),
+    ('keep3', 'passthrough', [0, 1]),
+    ])
+  X = np.random.uniform (20,30,(1000, 10))
+  transformer_.fit (X) 
+  return transformer_
+
+
 
 @fixtures.register('invertible')
 def ss_and_passthrough_transformer():
