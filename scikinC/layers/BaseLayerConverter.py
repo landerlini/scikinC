@@ -13,13 +13,13 @@ class BaseLayerConverter:
       activation = activation.__name__
 
     if activation == 'sigmoid':
-      return "%(x)s = 1. / (1+exp(-%(x)s));" % {'x':x} 
+      return "%(x)s = 1. / (1+expf(-%(x)s));" % {'x':x} 
     elif activation == 'tanh':
-      return "%(x)s = tanh(%(x)s);" % {'x':x} 
+      return "%(x)s = tanhf(%(x)s);" % {'x':x} 
     elif activation == 'relu':
       return "%(x)s = %(x)s > 0. ? %(x)s : 0.;" % {'x':x}
     elif activation == 'celu' or activation == 'elu':
-      return "%(x)s = %(x)s > 0. ? %(x)s : exp(%(x)s) - 1;" % {'x': x}
+      return "%(x)s = %(x)s > 0. ? %(x)s : expf(%(x)s) - 1;" % {'x': x}
     elif activation == 'linear':
       return ""
     else:
