@@ -53,7 +53,8 @@ class DeployedModel:
       ret = []
       for line in str(output, 'ASCII').split('\n'):
         tokens = [a for a in line.split(' ') if len(a)] 
-        if len(tokens) != 3: continue  
+        if len(tokens) != 3:
+          continue  
         addr, type_, name = tokens
         if type_ in "T":
           ret.append (name) 
