@@ -8,9 +8,11 @@ import string
 
 
 class DeployedModel:
-    def __init__(self, filename, compiled = 'test.so'):
+    def __init__(self, filename, compiled='test.so', use_avx2=False, float_t='float'):
         self.filename = filename
         self.compiled = compiled
+        self.use_avx2 = use_avx2
+        self.float_t = float_t
 
         self.compile() 
         self.funcnames = self.get_funcnames() 
@@ -22,8 +24,22 @@ class DeployedModel:
       os.system ( "rm %s" % (self.compiled, ) )
 
     def compile (self):
+      avx2_flags = [] if not self.use_avx2 else [
+         "-DUSE_AVX2_32" if self.float_t == 'float' else "-DUSE_AVX2_64", 
+         "-mavx2", "-mfma"
+        ]
+      
+      float_t_flag = ["-DFLOAT_T=%s" % self.float_t]
+
+      if self.use_avx2:
+        print ("Compiling with AVX2 support")
+      else:
+        print ("Compiling without AVX2 support")
+
       output = subprocess.check_output(
           ["gcc", self.filename, "-o", self.compiled, "--shared", "-fPIC", "-lm"]
+          + float_t_flag
+          + avx2_flags
           )
       if str(output, 'ASCII') not in ["", "\n"]:
         raise Exception("Compilation error %s" % str(output, 'ASCII'))
@@ -37,7 +53,8 @@ class DeployedModel:
       ret = []
       for line in str(output, 'ASCII').split('\n'):
         tokens = [a for a in line.split(' ') if len(a)] 
-        if len(tokens) != 3: continue  
+        if len(tokens) != 3:
+          continue  
         addr, type_, name = tokens
         if type_ in "T":
           ret.append (name) 
@@ -76,13 +93,13 @@ def deploy_pickle (name, obj, float_t = "float"):
       ) 
 
 
-  ret = DeployedModel(tmpfile+".C", compiled = './%s.so' % tmpfile) 
+  ret = DeployedModel(tmpfile+".C", compiled = './%s.so' % tmpfile, float_t=float_t) 
 
   os.system ("rm %(tmpfile)s.pkl %(tmpfile)s.C" % {'tmpfile': tmpfile} )
 
   return ret 
 
-def deploy_keras (name, obj, float_t = "float"):
+def deploy_keras (name, obj, float_t = "float", use_avx2=False):
   ### Randomize UID 
   s = string.ascii_letters 
   uid = [s[np.random.randint(len(s))] for _ in range(16)]
@@ -101,7 +118,7 @@ def deploy_keras (name, obj, float_t = "float"):
       ) 
 
 
-  ret = DeployedModel(tmpfile+".C", compiled = './%s.so' % tmpfile) 
+  ret = DeployedModel(tmpfile+".C", compiled='./%s.so' % tmpfile, use_avx2=use_avx2, float_t=float_t) 
 
   os.system ("rm -r %(tmpfile)s %(tmpfile)s.C" % {'tmpfile': tmpfile} )
 

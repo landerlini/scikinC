@@ -220,6 +220,28 @@ A few notes:
   | `celu`    | Available       |           | Only for alpha=1 (celu == elu) |
 
 
+## Vectorization
+An attempt to use vectorization and cache-aware blocking in matrix multiplication was done, but it 
+may hinder portability of the produced code and must therefore be enabled explicitly. 
+
+To enable vectorization with single-precision floating point representation (32 bits), compile with
+```
+ -mfma -mavx2 -DFLOAT_T=float -DUSE_AVX2_32
+```
+to use vectorization with double-precision representation (64 bits), use
+```
+ -mfma -mavx2 -DFLOAT_T=float -DUSE_AVX2_64
+```
+
+These flags:
+ * Enable AVX2 and FMA instructions.
+ * Define the floating-point type used throughout the code.
+ * Select the correct vectorized implementation based on precision.
+
+### Portability notice
+AVX2 and FMA are supported on most modern x86_64 CPUs, but not guaranteed on older or embedded systems.
+If unsure, compile without any of the flags above to fall back to the scalar implementation.
+
 ## Running tests
 In order to install the full dependencies needed to test the whole package, 
 install with the tag `fql`.

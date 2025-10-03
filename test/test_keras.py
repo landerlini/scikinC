@@ -53,6 +53,13 @@ def test_dense (classifier_dense):
   deployed = deploy_keras("keras_dense", classifier_dense) 
   assert eval_error (classifier_dense, deployed) < 1e-5
 
+def test_dense_with_avx2 (classifier_dense):
+  deployed = deploy_keras("keras_dense_with_avx2", classifier_dense, use_avx2=True) 
+  assert eval_error (classifier_dense, deployed) < 1e-5
+
+def test_dense_with_doubles_and_avx2 (classifier_dense):
+  deployed = deploy_keras("keras_dense_with_doubles_and_avx2", classifier_dense, use_avx2=True, float_t='double') 
+  assert eval_error (classifier_dense, deployed) < 1e-5
  
 ################################################################################
 ### PReLU layer 
